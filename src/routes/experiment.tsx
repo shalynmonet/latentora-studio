@@ -192,7 +192,13 @@ function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: 
                 )}
               </button>
               {photo && (
-                <button className="mt-1 text-xs text-muted-foreground hover:text-foreground" onClick={() => setPhoto(null)}>
+                <button
+                  className="mt-1 text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    setPhoto(null);
+                    setChecks((p) => p.filter((x) => x !== PHOTO_CHECK));
+                  }}
+                >
                   Remove photo
                 </button>
               )}
