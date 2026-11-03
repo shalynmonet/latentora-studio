@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { DEMO_ANALYSIS, DEMO_LISTINGS, DEMO_MATCHES, DEMO_PROFILE_NAME, DEMO_STORIES } from "./demo-data";
 import { heuristicAnalysis, heuristicMatch } from "./heuristics";
+import { PROVIDERS, interleave } from "./listings";
 import { describeSegmentation, parseSamBoxes } from "./sam-parse";
 import { scorePaperChallenge } from "./scoring";
 import { CHALLENGE_LIMITS, sanitizeSpec, scoreCustomChallenge } from "./challenge-rules";
@@ -12,6 +13,7 @@ import type {
   ChallengeSpec,
   ApiStatus,
   JobListing,
+  ListingSearchResult,
   OpportunityMatch,
   ResultSource,
   SegmentationEvidence,
@@ -89,6 +91,8 @@ export const createWorkspace = createServerFn({ method: "POST" })
             url: null,
             location: l.location,
             description: l.description,
+            kind: l.kind,
+            pay: l.pay,
             match: DEMO_MATCHES[l.external_id] as never,
             match_source: "demo_sample",
           })),
@@ -332,53 +336,49 @@ export const analyzeStories = createServerFn({ method: "POST" })
 
 /* --------------------------- opportunities -------------------------- */
 
-const CACHE_HOURS = 12; // Remotive asks for at most ~4 requests/day.
-
 export const searchJobs = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ query: z.string().trim().max(60) }).parse(d))
-  .handler(async ({ data }): Promise<{ listings: JobListing[]; source: "remotive" | "demo_sample"; error: string | null }> => {
+  .handler(async ({ data }): Promise<ListingSearchResult> => {
     const q = data.query.toLowerCase();
     const db = await admin();
-    const { data: cached } = await db.from("job_cache").select("payload, fetched_at").eq("query", q).maybeSingle();
-    if (cached && Date.now() - new Date(cached.fetched_at).getTime() < CACHE_HOURS * 3600_000) {
-      return { listings: cached.payload as unknown as JobListing[], source: "remotive", error: null };
+    const { FETCHERS } = await import("./listings.server");
+    // One cache row per source+query; each source keeps its own freshness window.
+    const outcomes = await Promise.all(
+      PROVIDERS.map(async (p) => {
+        const key = `${p.id}:${q}`;
+        const { data: cached } = await db.from("job_cache").select("payload, fetched_at").eq("query", key).maybeSingle();
+        if (cached && Date.now() - new Date(cached.fetched_at).getTime() < p.cacheHours * 3600_000) {
+          const rows = cached.payload as unknown as JobListing[];
+          return { provider: p.id, ok: true, cached: true, rows };
+        }
+        try {
+          const rows = await FETCHERS[p.id](q);
+          await db.from("job_cache").upsert({ query: key, payload: rows as never, fetched_at: new Date().toISOString() });
+          return { provider: p.id, ok: true, cached: false, rows };
+        } catch (e) {
+          console.error(`${p.name} fetch failed`, e);
+          if (cached) return { provider: p.id, ok: true, cached: true, rows: cached.payload as unknown as JobListing[] };
+          return { provider: p.id, ok: false, cached: false, rows: [] as JobListing[] };
+        }
+      }),
+    );
+    const sources = outcomes.map((o) => ({ provider: o.provider, ok: o.ok, count: o.rows.length, cached: o.cached }));
+    if (outcomes.every((o) => !o.ok)) {
+      return { listings: DEMO_LISTINGS, sources, demo: true, error: "None of the live job feeds responded, so sample listings are shown." };
     }
-    try {
-      const url = `https://remotive.com/api/remote-jobs?limit=20${q ? `&search=${encodeURIComponent(q)}` : ""}`;
-      const res = await fetch(url, { headers: { "User-Agent": "Latentora/1.0" } });
-      if (!res.ok) throw new Error(`Remotive ${res.status}`);
-      type RemotiveJob = {
-        id: number | string;
-        title: string;
-        company_name: string;
-        url: string;
-        candidate_required_location?: string;
-        category?: string;
-        description?: string;
-        publication_date?: string;
-      };
-      const json = (await res.json()) as { jobs?: RemotiveJob[] };
-      const listings: JobListing[] = (json.jobs ?? []).slice(0, 20).map((j) => ({
-        external_id: String(j.id),
-        title: j.title,
-        company: j.company_name,
-        url: j.url,
-        location: j.candidate_required_location ?? "Remote",
-        category: j.category ?? "",
-        description: stripHtml(j.description ?? "").slice(0, 4000),
-        published_at: j.publication_date ?? "",
-      }));
-      await db.from("job_cache").upsert({ query: q, payload: listings as never, fetched_at: new Date().toISOString() });
-      return { listings, source: "remotive", error: null };
-    } catch (e) {
-      console.error("Remotive fetch failed", e);
-      if (cached) return { listings: cached.payload as unknown as JobListing[], source: "remotive", error: "Showing the last saved results — the live job feed didn't respond." };
-      return { listings: DEMO_LISTINGS, source: "demo_sample", error: "The live job feed is unavailable, so sample listings are shown." };
-    }
+    const failed = outcomes.filter((o) => !o.ok).map((o) => PROVIDERS.find((p) => p.id === o.provider)!.name);
+    return {
+      listings: interleave(outcomes.map((o) => o.rows)),
+      sources,
+      demo: false,
+      error: failed.length ? `${failed.join(" and ")} didn't respond — showing the other sources.` : null,
+    };
   });
 
 const listingInput = z.object({
-  source: z.enum(["remotive", "pasted", "demo_sample"]),
+  source: z.enum(["remotive", "jobicy", "freelancer", "opentrain", "pasted", "demo_sample"]),
+  pay: z.string().trim().max(120).nullable().default(null),
+  kind: z.enum(["job", "contract"]).nullable().default(null),
   external_id: z.string().max(80).nullable(),
   title: z.string().trim().min(2).max(200),
   company: z.string().trim().max(200).nullable(),
