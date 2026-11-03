@@ -181,7 +181,7 @@ export const getWorkspace = createServerFn({ method: "POST" })
         segmentation: e.segmentation,
         photo_url: resolve(e.photo_url),
         created_at: e.created_at,
-      })) as WorkspaceData["experiments"],
+      })) as unknown as WorkspaceData["experiments"],
     };
   });
 
@@ -333,7 +333,17 @@ export const searchJobs = createServerFn({ method: "POST" })
       const url = `https://remotive.com/api/remote-jobs?limit=20${q ? `&search=${encodeURIComponent(q)}` : ""}`;
       const res = await fetch(url, { headers: { "User-Agent": "Latentora/1.0" } });
       if (!res.ok) throw new Error(`Remotive ${res.status}`);
-      const json = (await res.json()) as { jobs: Record<string, string>[] };
+      type RemotiveJob = {
+        id: number | string;
+        title: string;
+        company_name: string;
+        url: string;
+        candidate_required_location?: string;
+        category?: string;
+        description?: string;
+        publication_date?: string;
+      };
+      const json = (await res.json()) as { jobs?: RemotiveJob[] };
       const listings: JobListing[] = (json.jobs ?? []).slice(0, 20).map((j) => ({
         external_id: String(j.id),
         title: j.title,
@@ -585,7 +595,7 @@ export const submitExperiment = createServerFn({ method: "POST" })
 
     let photoPath: string | null = null;
     if (data.photoDataUrl) {
-      const [head, b64] = data.photoDataUrl.split(",");
+      const [head = "", b64 = ""] = data.photoDataUrl.split(",");
       const type = head.match(/image\/(\w+)/)?.[1] ?? "jpeg";
       const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
       const path = `${data.id}/proof/${crypto.randomUUID()}.${type === "jpeg" ? "jpg" : type}`;

@@ -73,6 +73,7 @@ function Atlas({ ws }: { ws: WorkspaceData }) {
   const { nodes, edges } = useMemo(() => buildAtlas(ws.analysis, ws.experiments), [ws.analysis, ws.experiments]);
   const [active, setActive] = useState<string | null>(null);
   const pos = useMemo(() => layout(nodes), [nodes]);
+  const P = (id: string) => pos[id] ?? { x: 400, y: 330 };
   const affected = useMemo(() => opportunitiesAffected(nodes, ws.opportunities), [nodes, ws.opportunities]);
 
   if (nodes.length === 0)
@@ -118,13 +119,13 @@ function Atlas({ ws }: { ws: WorkspaceData }) {
           ))}
           <circle cx={400} cy={330} r={4} fill="var(--gold)" />
           {nodes.map((n) => (
-            <line key={`spoke-${n.id}`} x1={400} y1={330} x2={pos[n.id].x} y2={pos[n.id].y} stroke="var(--border)" strokeWidth={0.6} strokeDasharray="2 5" />
+            <line key={`spoke-${n.id}`} x1={400} y1={330} x2={P(n.id).x} y2={P(n.id).y} stroke="var(--border)" strokeWidth={0.6} strokeDasharray="2 5" />
           ))}
           {edges.map((e, i) => (
-            <line key={i} x1={pos[e.from].x} y1={pos[e.from].y} x2={pos[e.to].x} y2={pos[e.to].y} stroke="var(--gold)" strokeOpacity={0.5} strokeWidth={1} />
+            <line key={i} x1={P(e.from).x} y1={P(e.from).y} x2={P(e.to).x} y2={P(e.to).y} stroke="var(--gold)" strokeOpacity={0.5} strokeWidth={1} />
           ))}
           {nodes.map((n) => {
-            const p = pos[n.id];
+            const p = P(n.id);
             const glow = n.status === "tested" ? "url(#glow-pearl)" : n.status === "demonstrated" ? "url(#glow-gold)" : "url(#glow-lav)";
             const core = n.status === "tested" ? "var(--pearl)" : n.status === "demonstrated" ? "var(--gold)" : "var(--lavender)";
             const isActive = active === n.id;

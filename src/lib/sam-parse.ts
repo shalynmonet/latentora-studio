@@ -36,7 +36,7 @@ export function describeSegmentation(
   } else {
     const main = [...structure].sort(
       (a, b) => (b.x2 - b.x1) * (b.y2 - b.y1) - (a.x2 - a.x1) * (a.y2 - a.y1),
-    )[0];
+    )[0]!;
     const bw = main.x2 - main.x1;
     const bh = main.y2 - main.y1;
     const aspect = bw > 0 ? Math.round((bh / bw) * 10) / 10 : 0;
