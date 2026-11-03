@@ -39,17 +39,6 @@ async function assertWorkspace(id: string) {
   return data;
 }
 
-function stripHtml(html: string) {
-  return html
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&#39;|&rsquo;/g, "'")
-    .replace(/&quot;|&ldquo;|&rdquo;/g, '"')
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 /* ------------------------------ status ------------------------------ */
 

@@ -9,9 +9,12 @@ const PER_SOURCE = 12;
 
 function stripHtml(html: string) {
   return html
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
+    .replace(/&#39;|&rsquo;|&#8217;/g, "'")
+    .replace(/&quot;|&ldquo;|&rdquo;/g, '"')
     .replace(/&hellip;/g, "…")
     .replace(/&#?\w+;/g, " ")
     .replace(/\s+/g, " ")
