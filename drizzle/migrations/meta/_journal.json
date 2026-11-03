@@ -15,6 +15,13 @@
       "when": 1793743254429,
       "tag": "0001_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793744466572,
+      "tag": "0002_opportunity_pay_kind",
+      "breakpoints": true
     }
   ]
 }
