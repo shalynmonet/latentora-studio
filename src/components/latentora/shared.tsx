@@ -46,8 +46,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/60 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-5 py-3">
         <Link to="/" className="flex shrink-0 items-center gap-2.5" aria-label="Latentora home">
-          <img src={logoIcon.url} alt="" width={36} height={36} className="size-9 mix-blend-screen" />
-          <img src={logoName.url} alt="Latentora" width={130} height={30} className="h-[18px] w-auto mix-blend-screen" />
+          <img src={logoIcon.url} alt="" width={36} height={36} className="size-9" />
+          <img src={logoName.url} alt="Latentora" width={130} height={30} className="h-[18px] w-auto" />
         </Link>
         <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label="Journey">
           {JOURNEY.map((s, i) => (
