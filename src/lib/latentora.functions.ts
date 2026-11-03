@@ -154,6 +154,8 @@ export const getWorkspace = createServerFn({ method: "POST" })
         url: o.url,
         location: o.location,
         description: o.description,
+        pay: o.pay,
+        kind: o.kind,
         match: o.match,
         match_source: o.match_source,
         created_at: o.created_at,
