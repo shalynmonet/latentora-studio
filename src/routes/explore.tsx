@@ -45,7 +45,7 @@ function ExplorePage() {
             Opportunities that fit <em className="text-gold-gradient">what you can do</em>
           </>
         }
-        sub="One list of live remote jobs and contract gigs from Remotive, Jobicy, Freelancer.com and OpenTrain AI — or paste a brief from Upwork, Twine, Mercor or anywhere else. Muse Spark matches on transferable abilities and is honest about what's missing."
+        sub="One list of live remote jobs and contract gigs from Remotive, Jobicy, Freelancer.com, OpenTrain AI and Terac — or paste a brief from Upwork, Twine, Mercor or anywhere else. Muse Spark matches on transferable abilities and is honest about what's missing."
       />
       <WorkspaceGate>{(ws, refresh, id) => <Explore ws={ws} refresh={refresh} id={id} />}</WorkspaceGate>
     </div>
@@ -184,7 +184,7 @@ function Explore({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; 
             </div>
           )}
           <div className="mt-4 max-h-[620px] space-y-3 overflow-y-auto pr-1">
-            {search.busy && <p className="text-sm text-muted-foreground">Scanning four feeds…</p>}
+            {search.busy && <p className="text-sm text-muted-foreground">Scanning five feeds…</p>}
             {results && results.listings.length === 0 && <p className="text-sm text-muted-foreground">No listings for that search. Try a broader word.</p>}
             {results?.listings
               .filter((l) => kind === "all" || l.kind === kind)

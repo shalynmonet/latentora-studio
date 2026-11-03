@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatPay, interleave, kindFromLabels } from "./listings";
+import { formatPay, interleave, kindFromLabels, matchesQuery } from "./listings";
 import type { JobListing } from "./types";
 
 const l = (provider: JobListing["provider"], title: string, company = "Co"): JobListing => ({
@@ -27,6 +27,12 @@ describe("unified listings", () => {
     expect(kindFromLabels(["freelance"])).toBe("contract");
     expect(kindFromLabels(["Full-Time"])).toBe("job");
     expect(kindFromLabels([])).toBe("job");
+  });
+
+  it("keyword-filters sources without search: every word must appear", () => {
+    expect(matchesQuery("", "anything")).toBe(true);
+    expect(matchesQuery("chemistry phd", "Chemistry Master's and PhDs", null)).toBe(true);
+    expect(matchesQuery("chemistry nurse", "Chemistry Master's and PhDs")).toBe(false);
   });
 
   it("shows pay only when the source gives it", () => {

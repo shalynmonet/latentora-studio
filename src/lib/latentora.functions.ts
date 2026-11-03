@@ -367,7 +367,7 @@ export const searchJobs = createServerFn({ method: "POST" })
   });
 
 const listingInput = z.object({
-  source: z.enum(["remotive", "jobicy", "freelancer", "opentrain", "pasted", "demo_sample"]),
+  source: z.enum(["remotive", "jobicy", "freelancer", "opentrain", "terac", "pasted", "demo_sample"]),
   pay: z.string().trim().max(120).nullable().default(null),
   kind: z.enum(["job", "contract"]).nullable().default(null),
   external_id: z.string().max(80).nullable(),
