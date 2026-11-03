@@ -92,7 +92,7 @@ export function PageIntro({ step, title, sub, children }: { step: number; title:
     <div className="animate-rise mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
       <div className="max-w-2xl">
         <p className="eyebrow mb-3">
-          0{step} · {JOURNEY[step - 1].label} — {JOURNEY[step - 1].sub}
+          0{step} · {JOURNEY[step - 1]?.label} — {JOURNEY[step - 1]?.sub}
         </p>
         <h1 className="text-5xl leading-[1.02] md:text-6xl">{title}</h1>
         <p className="mt-4 text-base text-muted-foreground">{sub}</p>
