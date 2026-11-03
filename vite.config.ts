@@ -12,4 +12,22 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    // Pre-bundle client deps up front so Vite never re-optimizes mid-session
+    // (a mid-session re-optimize leaves open tabs with two React copies → null dispatcher).
+    optimizeDeps: {
+      include: [
+        "@radix-ui/react-label",
+        "@radix-ui/react-checkbox",
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "clsx",
+        "tailwind-merge",
+        "lucide-react",
+        "sonner",
+        "zod",
+        "@tanstack/react-query",
+      ],
+    },
+  },
 });
