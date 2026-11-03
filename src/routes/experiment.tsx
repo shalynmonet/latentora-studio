@@ -28,8 +28,9 @@ export const Route = createFileRoute("/experiment")({
   component: ExperimentPage,
 });
 
+const PHOTO_CHECK = "The whole structure is visible in my photo";
 const MANUAL_CHECKS = [
-  "The whole structure is visible in my photo",
+  PHOTO_CHECK,
   "The load is resting on top of the structure",
   "Only paper and tape were used",
   "The structure stood on its own (not leaning on anything)",
@@ -212,11 +213,13 @@ function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: 
                   </div>
                 </>
               ) : (
-                <p className="text-xs text-muted-foreground">No photo? Use the manual evidence checklist — it's recorded as self-reported.</p>
+                <p className="text-xs text-muted-foreground">
+                  A photo is optional. Without one, just tick what's true below — it's saved as self-reported.
+                </p>
               )}
               <fieldset className="space-y-2">
-                <legend className="mb-1 text-xs text-muted-foreground">Manual evidence (self-reported)</legend>
-                {MANUAL_CHECKS.map((c) => (
+                <legend className="mb-1 text-xs text-muted-foreground">Tick what's true (optional, self-reported)</legend>
+                {MANUAL_CHECKS.filter((c) => photo || c !== PHOTO_CHECK).map((c) => (
                   <label key={c} className="flex items-center gap-2 text-sm">
                     <Checkbox checked={checks.includes(c)} onCheckedChange={(v) => setChecks((p) => (v ? [...p, c] : p.filter((x) => x !== c)))} />
                     {c}
