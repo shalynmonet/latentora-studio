@@ -9,14 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyState, PageIntro, Panel, SourceBadge, WorkspaceGate, useBusy } from "@/components/latentora/shared";
 import { deleteOpportunity, matchOpportunities, saveOpportunity, searchJobs } from "@/lib/latentora.functions";
-import type { FitLevel, JobListing, Opportunity, WorkspaceData } from "@/lib/types";
+import { PROVIDERS, PROVIDER_NAME } from "@/lib/listings";
+import type { FitLevel, JobListing, ListingKind, ListingSearchResult, Opportunity, WorkspaceData } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/explore")({
   head: () => ({
     meta: [
       { title: "Explore — Opportunity Radar · Latentora" },
-      { name: "description", content: "Real remote opportunities matched to your transferable abilities by Muse Spark." },
+      { name: "description", content: "Real remote jobs and contract gigs in one list, matched to your transferable abilities by Muse Spark." },
       { property: "og:title", content: "Explore — Opportunity Radar · Latentora" },
       { property: "og:description", content: "Find opportunities that fit what you can actually do." },
       { property: "og:type", content: "website" },
@@ -44,7 +45,7 @@ function ExplorePage() {
             Opportunities that fit <em className="text-gold-gradient">what you can do</em>
           </>
         }
-        sub="Search live remote listings from Remotive, or paste an Upwork, Twine or other freelance brief. Muse Spark matches on transferable abilities and is honest about what's missing."
+        sub="One list of live remote jobs and contract gigs from Remotive, Jobicy, Freelancer.com and OpenTrain AI — or paste a brief from Upwork, Twine, Mercor or anywhere else. Muse Spark matches on transferable abilities and is honest about what's missing."
       />
       <WorkspaceGate>{(ws, refresh, id) => <Explore ws={ws} refresh={refresh} id={id} />}</WorkspaceGate>
     </div>
@@ -56,7 +57,8 @@ function Explore({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; 
     new Set((ws.analysis?.result.transferable_skills ?? []).flatMap((t) => t.to_contexts)),
   ).slice(0, 6);
   const [query, setQuery] = useState(suggestions[0]?.split(" ").slice(0, 2).join(" ") ?? "operations");
-  const [results, setResults] = useState<{ listings: JobListing[]; source: "remotive" | "demo_sample"; error: string | null } | null>(null);
+  const [results, setResults] = useState<ListingSearchResult | null>(null);
+  const [kind, setKind] = useState<ListingKind | "all">("all");
   const search = useBusy();
   const match = useBusy();
   const [adding, setAdding] = useState<string | null>(null);
@@ -69,15 +71,17 @@ function Explore({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; 
     }
   };
 
-  const add = async (l: JobListing, source: "remotive" | "demo_sample") => {
+  const add = async (l: JobListing) => {
     setAdding(l.external_id);
     try {
       await saveOpportunity({
         data: {
           id,
           listing: {
-            source,
+            source: l.provider,
             external_id: l.external_id,
+            pay: l.pay,
+            kind: l.kind,
             title: l.title,
             company: l.company,
             url: l.url || null,
@@ -152,45 +156,64 @@ function Explore({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; 
               })}
             </div>
           )}
-          <p className="mt-3 text-xs text-muted-foreground">
-            Jobs via{" "}
-            <a className="text-gold hover:underline" href="https://remotive.com" target="_blank" rel="noreferrer">
-              Remotive
-            </a>{" "}
-            public API (24h delayed, cached up to 12h).
-          </p>
-          <div className="mt-5 max-h-[520px] space-y-3 overflow-y-auto pr-1">
-            {search.busy && <p className="text-sm text-muted-foreground">Scanning the feed…</p>}
-            {results && results.listings.length === 0 && <p className="text-sm text-muted-foreground">No listings for that search. Try a broader word.</p>}
-            {results?.listings.map((l) => (
-              <div key={l.external_id} className="rounded-2xl border border-border p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium">{l.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {l.company} · {l.location}
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={savedIds.has(l.external_id) || adding === l.external_id}
-                    onClick={() => add(l, results.source)}
+          <SourceLine results={results} />
+          {results && results.listings.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="Filter listings">
+              {(
+                [
+                  ["all", "All"],
+                  ["job", "Jobs"],
+                  ["contract", "Contract gigs"],
+                ] as const
+              ).map(([k, label]) => {
+                const n = k === "all" ? results.listings.length : results.listings.filter((l) => l.kind === k).length;
+                return (
+                  <button
+                    key={k}
+                    aria-pressed={kind === k}
+                    onClick={() => setKind(k)}
+                    className={cn(
+                      "rounded-full border px-3 py-1 text-xs transition-colors",
+                      kind === k ? "border-gold/60 bg-gold/10 text-gold" : "border-border text-muted-foreground hover:text-foreground",
+                    )}
                   >
-                    {adding === l.external_id ? <Loader2 className="animate-spin" /> : <Plus />}
-                    {savedIds.has(l.external_id) ? "On radar" : "Add"}
-                  </Button>
+                    {label} · {n}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <div className="mt-4 max-h-[620px] space-y-3 overflow-y-auto pr-1">
+            {search.busy && <p className="text-sm text-muted-foreground">Scanning four feeds…</p>}
+            {results && results.listings.length === 0 && <p className="text-sm text-muted-foreground">No listings for that search. Try a broader word.</p>}
+            {results?.listings
+              .filter((l) => kind === "all" || l.kind === kind)
+              .map((l) => (
+                <div key={l.external_id} className="rounded-2xl border border-border p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-medium">{l.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {l.company} · {l.location}
+                      </p>
+                      {l.pay && <p className="mt-1 text-xs font-medium text-gold">{l.pay}</p>}
+                    </div>
+                    <Button size="sm" variant="outline" disabled={savedIds.has(l.external_id) || adding === l.external_id} onClick={() => add(l)}>
+                      {adding === l.external_id ? <Loader2 className="animate-spin" /> : <Plus />}
+                      {savedIds.has(l.external_id) ? "On radar" : "Add"}
+                    </Button>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {l.provider === "demo_sample" ? <Badge variant="sample">Sample listing</Badge> : <Badge variant="outline">{PROVIDER_NAME[l.provider]}</Badge>}
+                    <KindBadge kind={l.kind} />
+                    {l.url && (
+                      <a href={l.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-gold hover:underline">
+                        Original listing <ExternalLink className="size-3" />
+                      </a>
+                    )}
+                  </div>
                 </div>
-                <div className="mt-2 flex items-center gap-2">
-                  {results.source === "demo_sample" ? <Badge variant="sample">Sample listing</Badge> : <Badge variant="outline">Remotive</Badge>}
-                  {l.url && (
-                    <a href={l.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-gold hover:underline">
-                      Original listing <ExternalLink className="size-3" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </Panel>
         <PasteForm id={id} refresh={refresh} />
@@ -231,12 +254,14 @@ function OpportunityCard({ o, id, refresh, onMatch, busy }: { o: Opportunity; id
           <p className="text-xs text-muted-foreground">
             {o.company ?? "—"} {o.location ? `· ${o.location}` : ""}
           </p>
+          {o.pay && <p className="mt-1 text-xs font-medium text-gold">{o.pay}</p>}
         </div>
         {m && <span className={cn("rounded-full border px-3 py-1 text-xs font-semibold capitalize", FIT_STYLE[m.fit])}>{m.fit} fit</span>}
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        {o.source === "remotive" && <Badge variant="outline">Source: Remotive</Badge>}
+        {PROVIDER_NAME[o.source] && <Badge variant="outline">Source: {PROVIDER_NAME[o.source]}</Badge>}
         {o.source === "pasted" && <Badge variant="outline">Source: pasted brief</Badge>}
+        {o.kind && <KindBadge kind={o.kind} />}
         {o.source === "demo_sample" && <Badge variant="sample">Sample listing · not real</Badge>}
         {m && <SourceBadge source={o.match_source} model="muse-spark-1.3" />}
         {o.url && (
@@ -301,7 +326,7 @@ function PasteForm({ id, refresh }: { id: string; refresh: () => void }) {
   return (
     <Panel>
       <h2 className="text-3xl">Paste a freelance brief</h2>
-      <p className="mt-1 text-sm text-muted-foreground">From Upwork, Twine, a friend's email — anything. Copy the text in; nothing is scraped.</p>
+      <p className="mt-1 text-sm text-muted-foreground">From Upwork, Twine, Mercor, a friend's email — anything. Copy the text in; nothing is scraped.</p>
       <form
         className="mt-4 space-y-3"
         onSubmit={async (e) => {
@@ -348,5 +373,34 @@ function PasteForm({ id, refresh }: { id: string; refresh: () => void }) {
         </Button>
       </form>
     </Panel>
+  );
+}
+
+function KindBadge({ kind }: { kind: ListingKind }) {
+  return kind === "contract" ? (
+    <span className="rounded-full border border-lavender/40 bg-lavender/10 px-2 py-0.5 text-[11px] text-lavender">Contract gig</span>
+  ) : (
+    <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">Job</span>
+  );
+}
+
+function SourceLine({ results }: { results: ListingSearchResult | null }) {
+  return (
+    <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+      Live from{" "}
+      {PROVIDERS.map((p, i) => {
+        const r = results?.sources.find((s) => s.provider === p.id);
+        return (
+          <span key={p.id}>
+            <a className="text-gold hover:underline" href={p.url} target="_blank" rel="noreferrer">
+              {p.name}
+            </a>
+            {r && <span className={r.ok ? "" : "text-warning"}> ({r.ok ? r.count : "offline"})</span>}
+            {i < PROVIDERS.length - 2 ? ", " : i === PROVIDERS.length - 2 ? " and " : ""}
+          </span>
+        );
+      })}
+      . Free public feeds, refreshed every few hours. Apply on the original site.
+    </p>
   );
 }
