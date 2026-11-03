@@ -65,9 +65,13 @@ async function jobicy(q: string): Promise<JobListing[]> {
 
 async function freelancer(q: string): Promise<JobListing[]> {
   type P = { id: number; title: string; seo_url: string; type: "fixed" | "hourly"; budget?: { minimum?: number; maximum?: number }; currency?: { code?: string }; time_submitted?: number; description?: string; preview_description?: string; jobs?: { name: string }[] };
-  const url = `https://www.freelancer.com/api/projects/0.1/projects/active/?limit=${PER_SOURCE}&full_description=true&job_details=true&compact=true${q ? `&query=${encodeURIComponent(q)}` : ""}`;
+  const url = `https://www.freelancer.com/api/projects/0.1/projects/active/?limit=30&full_description=true&job_details=true&compact=true${q ? `&query=${encodeURIComponent(q)}` : ""}`;
   const json = await getJSON<{ result?: { projects?: P[] } }>(url);
-  return (json.result?.projects ?? []).slice(0, PER_SOURCE).map((p) => ({
+  // Freelancer's search is loose, so keep only projects that actually mention the words.
+  return (json.result?.projects ?? [])
+    .filter((p) => matchesQuery(q, p.title, p.description, p.preview_description, p.jobs?.map((j) => j.name).join(" ")))
+    .slice(0, PER_SOURCE)
+    .map((p) => ({
     provider: "freelancer",
     external_id: `freelancer:${p.id}`,
     title: p.title,
