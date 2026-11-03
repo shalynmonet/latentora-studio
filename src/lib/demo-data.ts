@@ -132,6 +132,9 @@ export const DEMO_ANALYSIS: AnalysisResult = {
 
 export const DEMO_LISTINGS: JobListing[] = [
   {
+    provider: "demo_sample",
+    kind: "job",
+    pay: null,
     external_id: "demo-ops-1",
     title: "Operations Coordinator (sample listing)",
     company: "Sample Co. — not a real posting",
@@ -143,6 +146,9 @@ export const DEMO_LISTINGS: JobListing[] = [
     published_at: "",
   },
   {
+    provider: "demo_sample",
+    kind: "contract",
+    pay: null,
     external_id: "demo-edu-2",
     title: "Customer Education Specialist (sample listing)",
     company: "Sample Co. — not a real posting",
