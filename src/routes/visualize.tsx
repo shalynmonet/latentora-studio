@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bookmark, BookmarkCheck, Loader2, RefreshCw, Sparkles, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Bookmark, BookmarkCheck, Camera, Loader2, RefreshCw, Sparkles, Trash2, UserRound } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { EmptyState, PageIntro, Panel, SourceBadge, WorkspaceGate, resolveImage, useBusy } from "@/components/latentora/shared";
+import { EmptyState, PageIntro, Panel, SourceBadge, WorkspaceGate, resizeImage, resolveImage, useBusy } from "@/components/latentora/shared";
 import { deleteBoard, generateBoard, updateBoard } from "@/lib/latentora.functions";
 import type { VisionBoard, WorkspaceData } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -36,7 +36,7 @@ function VisualizePage() {
             Step inside a <em className="text-gold-gradient">possible</em> future
           </>
         }
-        sub="Choose an opportunity and Muse Image paints you exploring it, drawing on your stories and interests. These are imagined possibilities — not predictions, and not achievements."
+        sub="Choose an opportunity, optionally add a photo of yourself, and Muse Image paints you exploring it, drawing on your stories and interests. These are imagined possibilities — not predictions, and not achievements."
       />
       <WorkspaceGate>{(ws, refresh, id) => <Studio ws={ws} refresh={refresh} id={id} />}</WorkspaceGate>
     </div>
@@ -48,6 +48,8 @@ function Studio({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; i
   const [selected, setSelected] = useState<string | null>(opp ?? ws.opportunities[0]?.id ?? null);
   const [note, setNote] = useState("");
   const [filter, setFilter] = useState<"all" | "saved">("all");
+  const [photo, setPhoto] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const gen = useBusy();
 
   useEffect(() => {
@@ -68,7 +70,7 @@ function Studio({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; i
     );
 
   const generate = async (opportunityId: string) => {
-    const r = await gen.run(() => generateBoard({ data: { id, opportunityId, sceneNote: note } }));
+    const r = await gen.run(() => generateBoard({ data: { id, opportunityId, sceneNote: note, photoDataUrl: photo } }));
     if (r) {
       toast.success("A new possibility has been imagined.");
       refresh();
@@ -104,6 +106,48 @@ function Studio({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; i
           <div className="mt-5 space-y-1.5">
             <Label htmlFor="note">Add a scene detail (optional)</Label>
             <Textarea id="note" rows={2} value={note} maxLength={300} onChange={(e) => setNote(e.target.value)} placeholder="e.g. by the sea, with my dog, at golden hour" />
+          </div>
+          <div className="mt-5 space-y-2">
+            <Label>Put yourself in the picture (optional)</Label>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={async (e) => {
+                const f = e.target.files?.[0];
+                e.target.value = "";
+                if (!f) return;
+                try {
+                  setPhoto(await resizeImage(f, 1024));
+                } catch {
+                  toast.error("Couldn't read that image.");
+                }
+              }}
+            />
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border border-dashed border-gold/40 hover:border-gold"
+                aria-label={photo ? "Change your photo" : "Upload a photo of yourself"}
+              >
+                {photo ? <img src={photo} alt="Your photo" className="size-full object-cover" /> : <Camera className="size-5 text-gold" />}
+              </button>
+              <div className="text-xs text-muted-foreground">
+                {photo ? (
+                  <>
+                    Muse Image will use this photo to show <span className="text-foreground">you</span> in the scene.{" "}
+                    <button type="button" className="underline hover:text-foreground" onClick={() => setPhoto(null)}>
+                      Remove
+                    </button>
+                  </>
+                ) : (
+                  "Upload a clear photo of your face. Without one, an imagined person is shown instead."
+                )}
+                <p className="mt-1">Your photo is sent to Meta only to make the picture and isn't saved here.</p>
+              </div>
+            </div>
           </div>
           <Button size="lg" className="mt-5 w-full" disabled={!selected || gen.busy} onClick={() => selected && generate(selected)}>
             {gen.busy ? (
@@ -156,7 +200,14 @@ function Studio({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; i
                 <BoardImage b={b} />
                 <figcaption className="space-y-3 p-5">
                   <p className="font-display text-xl">{b.title}</p>
-                  <SourceBadge source={b.source} model="muse-image-1.0" />
+                  <div className="flex flex-wrap gap-2">
+                    <SourceBadge source={b.source} model="muse-image-1.0" />
+                    {b.from_photo && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-lavender/40 px-2.5 py-0.5 text-[0.7rem] text-lavender">
+                        <UserRound className="size-3" /> From your photo
+                      </span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     <Button
                       size="sm"
