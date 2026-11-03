@@ -10,6 +10,8 @@ import type { ResultSource } from "@/lib/types";
 import { startWorkspace, statusQuery, setWorkspaceId, useWorkspace } from "@/lib/workspace";
 import sampleBoard1 from "@/assets/sample-board-1.jpg";
 import sampleBoard2 from "@/assets/sample-board-2.jpg";
+import logoIcon from "@/assets/latentora_icon.png.asset.json";
+import logoName from "@/assets/latentora_name.png.asset.json";
 
 export const ASSET_IMAGES: Record<string, string> = {
   "asset:sample-board-1": sampleBoard1,
@@ -43,11 +45,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/60 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-5 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-full bg-gold-gradient text-primary-foreground">
-            <Sparkles className="size-4" />
-          </span>
-          <span className="font-display text-2xl leading-none">Latentora</span>
+        <Link to="/" className="flex shrink-0 items-center gap-2.5" aria-label="Latentora home">
+          <img src={logoIcon.url} alt="" width={36} height={36} className="size-9 mix-blend-screen" />
+          <img src={logoName.url} alt="Latentora" width={130} height={30} className="h-[18px] w-auto mix-blend-screen" />
         </Link>
         <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label="Journey">
           {JOURNEY.map((s, i) => (

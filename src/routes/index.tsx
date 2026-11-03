@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { JOURNEY, StartChoices } from "@/components/latentora/shared";
 import { useWorkspace } from "@/lib/workspace";
 import hero from "@/assets/hero-constellation.jpg";
+import logoFull from "@/assets/latentora_logo_full.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,6 +50,13 @@ function Index() {
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/70 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent" />
         <div className="mx-auto max-w-7xl px-5 pb-32 pt-24 md:pb-44 md:pt-36">
+          <img
+            src={logoFull.url}
+            alt="Latentora"
+            width={800}
+            height={480}
+            className="animate-rise pointer-events-none absolute right-[4%] top-1/2 hidden w-[34%] max-w-[480px] -translate-y-1/2 mix-blend-screen xl:block"
+          />
           <p className="eyebrow animate-rise">Human potential, discovered</p>
           <h1 className="animate-rise mt-6 max-w-3xl text-6xl leading-[0.95] md:text-8xl">
             Discover the future <em className="text-aurora animate-shimmer">you haven't imagined</em> yet.
