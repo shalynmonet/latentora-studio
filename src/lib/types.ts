@@ -56,7 +56,10 @@ export interface OpportunityMatch {
   rationale: string;
 }
 
-export type OpportunitySource = "remotive" | "pasted" | "demo_sample";
+/** Free public listing feeds merged into one list on Explore. */
+export type ListingProvider = "remotive" | "jobicy" | "freelancer" | "opentrain";
+export type OpportunitySource = ListingProvider | "pasted" | "demo_sample";
+export type ListingKind = "job" | "contract";
 
 export interface Opportunity {
   id: string;
@@ -67,12 +70,15 @@ export interface Opportunity {
   url: string | null;
   location: string | null;
   description: string;
+  pay: string | null;
+  kind: ListingKind | null;
   match: OpportunityMatch | null;
   match_source: ResultSource | null;
   created_at: string;
 }
 
 export interface JobListing {
+  provider: ListingProvider | "demo_sample";
   external_id: string;
   title: string;
   company: string;
@@ -81,6 +87,17 @@ export interface JobListing {
   category: string;
   description: string;
   published_at: string;
+  kind: ListingKind;
+  /** Pay exactly as the source states it, or null when not listed. */
+  pay: string | null;
+}
+
+export interface ListingSearchResult {
+  listings: JobListing[];
+  /** Per-source outcome so the UI can say which feeds responded. */
+  sources: { provider: ListingProvider; ok: boolean; count: number; cached: boolean }[];
+  demo: boolean;
+  error: string | null;
 }
 
 export interface VisionBoard {
