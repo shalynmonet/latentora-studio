@@ -31,9 +31,12 @@ export function formatPay(min: number | null | undefined, max: number | null | u
   const hi = typeof max === "number" && max > 0 ? max : null;
   if (lo == null && hi == null) return null;
   const cur = (currency || "USD").toUpperCase();
-  const range = lo != null && hi != null && lo !== hi ? `${money(lo, cur)}–${money(hi, cur)}` : money((hi ?? lo)!, cur);
+  const hasSym = ["USD", "EUR", "GBP"].includes(cur);
+  const num = (n: number) => (hasSym ? money(n, cur) : money(n, cur).replace(` ${cur}`, ""));
+  const range = lo != null && hi != null && lo !== hi ? `${num(lo)}–${num(hi)}` : num((hi ?? lo)!);
+  const withCode = hasSym ? range : `${range} ${cur}`;
   const per = period ? ` ${period}` : "";
-  return `${range}${per}`;
+  return `${withCode}${per}`;
 }
 
 /** Keyword filter for sources without server-side search: every word must appear. */
