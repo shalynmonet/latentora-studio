@@ -6,8 +6,10 @@ import { DEMO_ANALYSIS, DEMO_LISTINGS, DEMO_MATCHES, DEMO_PROFILE_NAME, DEMO_STO
 import { heuristicAnalysis, heuristicMatch } from "./heuristics";
 import { describeSegmentation, parseSamBoxes } from "./sam-parse";
 import { scorePaperChallenge } from "./scoring";
+import { CHALLENGE_LIMITS, sanitizeSpec, scoreCustomChallenge } from "./challenge-rules";
 import type {
   AnalysisResult,
+  ChallengeSpec,
   ApiStatus,
   JobListing,
   OpportunityMatch,
@@ -123,12 +125,13 @@ export const getWorkspace = createServerFn({ method: "POST" })
     const db = await admin();
     const { data: ws } = await db.from("workspaces").select("id, display_name, is_demo").eq("id", data.id).maybeSingle();
     if (!ws) return null;
-    const [stories, analyses, opps, boards, exps] = await Promise.all([
+    const [stories, analyses, opps, boards, exps, chals] = await Promise.all([
       db.from("stories").select("id, kind, title, description, created_at").eq("workspace_id", ws.id).order("created_at"),
       db.from("analyses").select("id, source, model, result, created_at").eq("workspace_id", ws.id).order("created_at", { ascending: false }).limit(1),
       db.from("opportunities").select("*").eq("workspace_id", ws.id).order("created_at", { ascending: false }),
       db.from("vision_boards").select("*").eq("workspace_id", ws.id).order("created_at", { ascending: false }),
       db.from("experiments").select("*").eq("workspace_id", ws.id).order("created_at", { ascending: false }),
+      db.from("challenges").select("*").eq("workspace_id", ws.id).order("created_at", { ascending: false }),
     ]);
 
     // Sign private storage paths for display.
@@ -170,11 +173,13 @@ export const getWorkspace = createServerFn({ method: "POST" })
         image_url: resolve(b.image_url) ?? "",
         source: b.source,
         saved: b.saved,
+        from_photo: b.from_photo,
         created_at: b.created_at,
       })) as WorkspaceData["boards"],
       experiments: (exps.data ?? []).map((e) => ({
         id: e.id,
         challenge: e.challenge,
+        challenge_id: e.challenge_id,
         inputs: e.inputs,
         score: e.score,
         evidence_mode: e.evidence_mode,
@@ -182,6 +187,15 @@ export const getWorkspace = createServerFn({ method: "POST" })
         photo_url: resolve(e.photo_url),
         created_at: e.created_at,
       })) as unknown as WorkspaceData["experiments"],
+      challenges: (chals.data ?? []).map((c) => ({
+        id: c.id,
+        capability: c.capability,
+        title: c.title,
+        spec: c.spec,
+        source: c.source,
+        model: c.model,
+        created_at: c.created_at,
+      })) as unknown as WorkspaceData["challenges"],
     };
   });
 
@@ -480,7 +494,19 @@ export const matchOpportunities = createServerFn({ method: "POST" })
 
 export const generateBoard = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
-    z.object({ id: uuid, opportunityId: uuid, sceneNote: z.string().trim().max(300).default("") }).parse(d),
+    z
+      .object({
+        id: uuid,
+        opportunityId: uuid,
+        sceneNote: z.string().trim().max(300).default(""),
+        photoDataUrl: z
+          .string()
+          .max(4_000_000)
+          .regex(/^data:image\/(jpeg|png|webp);base64,/)
+          .nullable()
+          .default(null),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
     await assertWorkspace(data.id);
@@ -497,8 +523,11 @@ export const generateBoard = createServerFn({ method: "POST" })
     const caps = ((analysis?.result as unknown as AnalysisResult | undefined)?.capabilities ?? []).slice(0, 4).map((c) => c.name);
     const role = opp.title.replace(/\(sample listing\)/i, "").trim();
 
+    const withPhoto = Boolean(data.photoDataUrl);
     const prompt = [
-      `An aspirational, cinematic vision-board image of a person thriving in a possible future as: ${role}.`,
+      withPhoto
+        ? `Using the person in the reference photo as the subject — keep their face, skin tone, hair and overall likeness clearly recognisable — create an aspirational, cinematic vision-board image of them thriving in a possible future as: ${role}. Change only the setting, clothing and activity to fit the role.`
+        : `An aspirational, cinematic vision-board image of a person thriving in a possible future as: ${role}.`,
       caps.length ? `They are visibly using these strengths: ${caps.join(", ")}.` : "",
       projects.length ? `Subtle visual nods to their past: ${projects.join("; ")}.` : "",
       interests.length ? `Personal touches from their interests: ${interests.join(", ")}.` : "",
@@ -511,7 +540,7 @@ export const generateBoard = createServerFn({ method: "POST" })
     const m = await meta();
     let b64: string;
     try {
-      b64 = await m.museImage(prompt);
+      b64 = data.photoDataUrl ? await m.museImageEdit(prompt, data.photoDataUrl) : await m.museImage(prompt);
     } catch (e) {
       if (e instanceof m.MetaUnavailableError) {
         throw new Error("Muse Image is unavailable right now, so no board was generated. Please try again shortly.");
@@ -533,6 +562,7 @@ export const generateBoard = createServerFn({ method: "POST" })
         image_url: `storage:${path}`,
         source: "meta_live",
         saved: false,
+        from_photo: withPhoto,
       })
       .select("id")
       .single();
@@ -638,6 +668,185 @@ export const submitExperiment = createServerFn({ method: "POST" })
         workspace_id: data.id,
         challenge: "paper_structure",
         inputs: data.inputs as never,
+        score: score as never,
+        evidence_mode,
+        segmentation: segmentation as never,
+        photo_url: photoPath,
+      })
+      .select("id")
+      .single();
+    if (error || !row) throw new Error("Could not save your result");
+    return { experimentId: row.id, evidence_mode, notice };
+  });
+
+/* ------------------------- designed challenges ----------------------- */
+
+const CHALLENGE_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["title", "why", "duration_minutes", "materials", "steps", "measures", "photo_subject", "safety_note"],
+  properties: {
+    title: { type: "string" },
+    why: { type: "string" },
+    duration_minutes: { type: "integer" },
+    materials: { type: "array", items: { type: "string" } },
+    steps: { type: "array", items: { type: "string" } },
+    measures: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["label", "unit", "direction", "target", "partial", "how_to_measure"],
+        properties: {
+          label: { type: "string" },
+          unit: { type: "string" },
+          direction: { type: "string", enum: ["at_least", "at_most"] },
+          target: { type: "number" },
+          partial: { type: "number" },
+          how_to_measure: { type: "string" },
+        },
+      },
+    },
+    photo_subject: { type: ["string", "null"] },
+    safety_note: { type: "string" },
+  },
+} as const;
+
+export const generateChallenge = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ id: uuid, capability: z.string().trim().min(2).max(120), context: z.string().trim().max(300).default("") }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await assertWorkspace(data.id);
+    const db = await admin();
+    const [{ data: stories }, { data: analysis }] = await Promise.all([
+      db.from("stories").select("kind, title").eq("workspace_id", data.id),
+      db.from("analyses").select("result").eq("workspace_id", data.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    ]);
+    const result = analysis?.result as unknown as AnalysisResult | undefined;
+    const cap = result?.capabilities.find((c) => c.name.toLowerCase() === data.capability.toLowerCase());
+    const proof = result?.needs_validation.find((v) => v.capability.toLowerCase() === data.capability.toLowerCase());
+    const m = await meta();
+    let raw: unknown;
+    try {
+      raw = await m.sparkJSON({
+        schemaName: "proof_challenge",
+        schema: CHALLENGE_SCHEMA as unknown as Record<string, unknown>,
+        system: [
+          "You design small, safe, at-home challenges that let a person test ONE capability with numbers they can measure themselves.",
+          `Rules: ${CHALLENGE_LIMITS.minMeasures}-${CHALLENGE_LIMITS.maxMeasures} measures; each must be a number the person can count, time, or measure with everyday tools (timer, ruler, kitchen scale, counting).`,
+          "Never use subjective ratings, self-scores, or 'quality out of 10'. Targets must be realistic for a motivated beginner; 'partial' is an easier threshold on the same scale (lower for at_least, higher for at_most).",
+          `Keep it under ${CHALLENGE_LIMITS.maxDurationMinutes} minutes, cheap household materials only, no purchases, no other people required unless optional, nothing dangerous.`,
+          "photo_subject: a 1-3 word noun phrase for what a photo of the finished result would show (e.g. 'paper bridge', 'handwritten plan'), or null if a photo cannot show anything useful.",
+          "Write in plain, warm English. No scores, no percentages of confidence.",
+        ].join(" "),
+        user: JSON.stringify({
+          capability: data.capability,
+          capability_rationale: cap?.rationale ?? null,
+          what_would_prove_it: proof?.what_would_prove_it ?? null,
+          person_context: (stories ?? []).map((s) => `${s.kind}: ${s.title}`).slice(0, 8),
+          extra_request: data.context || null,
+        }),
+      });
+    } catch (e) {
+      if (e instanceof m.MetaUnavailableError) throw new Error("Muse Spark is unavailable right now, so no challenge was designed. Please try again shortly.");
+      throw e;
+    }
+    const spec = sanitizeSpec(raw, data.capability);
+    if (!spec) throw new Error("Muse Spark's design didn't have enough measurable targets. Please try again.");
+    const { data: row, error } = await db
+      .from("challenges")
+      .insert({
+        workspace_id: data.id,
+        capability: spec.capability,
+        title: spec.title,
+        spec: spec as never,
+        source: "meta_live",
+        model: m.META_MODELS.spark,
+      })
+      .select("id")
+      .single();
+    if (error || !row) throw new Error("Could not save the challenge");
+    return { challengeId: row.id };
+  });
+
+export const deleteChallenge = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ id: uuid, challengeId: uuid }).parse(d))
+  .handler(async ({ data }) => {
+    const db = await admin();
+    await db.from("challenges").delete().eq("id", data.challengeId).eq("workspace_id", data.id);
+    return { ok: true };
+  });
+
+export const submitCustomExperiment = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        id: uuid,
+        challengeId: uuid,
+        values: z.record(z.string().max(60), z.coerce.number().min(0).max(100000)),
+        reflection: z.string().max(1500).default(""),
+        photoDataUrl: z
+          .string()
+          .max(4_000_000)
+          .regex(/^data:image\/(jpeg|png|webp);base64,/)
+          .nullable(),
+        manualChecks: z.array(z.string().max(200)).max(10).default([]),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    await assertWorkspace(data.id);
+    const db = await admin();
+    const { data: ch } = await db.from("challenges").select("id, spec").eq("id", data.challengeId).eq("workspace_id", data.id).maybeSingle();
+    if (!ch) throw new Error("Challenge not found");
+    const spec = ch.spec as unknown as ChallengeSpec;
+    const ids = new Set(spec.measures.map((m) => m.id));
+    const values = Object.fromEntries(Object.entries(data.values).filter(([k]) => ids.has(k)));
+    const inputs = { values, reflection: data.reflection };
+    const score = scoreCustomChallenge(spec, inputs);
+
+    let photoPath: string | null = null;
+    if (data.photoDataUrl) {
+      const [head = "", b64 = ""] = data.photoDataUrl.split(",");
+      const type = head.match(/image\/(\w+)/)?.[1] ?? "jpeg";
+      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      const path = `${data.id}/proof/${crypto.randomUUID()}.${type === "jpeg" ? "jpg" : type}`;
+      const { error } = await db.storage.from(BUCKET).upload(path, bytes, { contentType: `image/${type}` });
+      if (!error) photoPath = `storage:${path}`;
+    }
+
+    let evidence_mode: "sam" | "manual" = "manual";
+    let segmentation: SegmentationEvidence | { manual_checks: string[]; note?: string } = { manual_checks: data.manualChecks };
+    let notice: string | null = null;
+    if (data.photoDataUrl && spec.photo_subject) {
+      const m = await meta();
+      try {
+        const text = await m.samSegment(data.photoDataUrl, spec.photo_subject);
+        const boxes = parseSamBoxes(text);
+        segmentation = {
+          model: m.META_MODELS.sam,
+          structure_prompt: spec.photo_subject,
+          load_prompt: null,
+          structure_boxes: boxes,
+          load_boxes: [],
+          observations: describeSegmentation(boxes, [], spec.photo_subject, null),
+        };
+        evidence_mode = "sam";
+      } catch (e) {
+        if (!(e instanceof m.MetaUnavailableError)) throw e;
+        notice = "Photo analysis was unavailable, so your manual checklist was recorded instead.";
+        segmentation = { manual_checks: data.manualChecks, note: "SAM 3.1 unavailable at submission time." };
+      }
+    }
+
+    const { data: row, error } = await db
+      .from("experiments")
+      .insert({
+        workspace_id: data.id,
+        challenge: "designed",
+        challenge_id: ch.id,
+        inputs: inputs as never,
         score: score as never,
         evidence_mode,
         segmentation: segmentation as never,
