@@ -8,6 +8,13 @@
       "when": 1793737957756,
       "tag": "0000_latentora_core",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793743254429,
+      "tag": "0001_migration",
+      "breakpoints": true
     }
   ]
 }

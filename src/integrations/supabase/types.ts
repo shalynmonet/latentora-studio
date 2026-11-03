@@ -49,9 +49,51 @@ export type Database = {
           },
         ]
       }
+      challenges: {
+        Row: {
+          capability: string
+          created_at: string
+          id: string
+          model: string | null
+          source: string
+          spec: Json
+          title: string
+          workspace_id: string
+        }
+        Insert: {
+          capability: string
+          created_at?: string
+          id?: string
+          model?: string | null
+          source: string
+          spec: Json
+          title: string
+          workspace_id: string
+        }
+        Update: {
+          capability?: string
+          created_at?: string
+          id?: string
+          model?: string | null
+          source?: string
+          spec?: Json
+          title?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       experiments: {
         Row: {
           challenge: string
+          challenge_id: string | null
           created_at: string
           evidence_mode: string
           id: string
@@ -63,6 +105,7 @@ export type Database = {
         }
         Insert: {
           challenge: string
+          challenge_id?: string | null
           created_at?: string
           evidence_mode: string
           id?: string
@@ -74,6 +117,7 @@ export type Database = {
         }
         Update: {
           challenge?: string
+          challenge_id?: string | null
           created_at?: string
           evidence_mode?: string
           id?: string
@@ -84,6 +128,13 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "experiments_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "experiments_workspace_id_fkey"
             columns: ["workspace_id"]
@@ -202,6 +253,7 @@ export type Database = {
       vision_boards: {
         Row: {
           created_at: string
+          from_photo: boolean
           id: string
           image_url: string
           opportunity_id: string | null
@@ -213,6 +265,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          from_photo?: boolean
           id?: string
           image_url: string
           opportunity_id?: string | null
@@ -224,6 +277,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          from_photo?: boolean
           id?: string
           image_url?: string
           opportunity_id?: string | null

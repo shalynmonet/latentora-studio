@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Camera, CheckCircle2, CircleDashed, Loader2, XCircle } from "lucide-react";
+import { Camera, CheckCircle2, CircleDashed, Loader2, Wand2, XCircle } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +8,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { PageIntro, Panel, WorkspaceGate, useBusy } from "@/components/latentora/shared";
+import { PageIntro, Panel, WorkspaceGate, resizeImage, useBusy } from "@/components/latentora/shared";
 import { submitExperiment } from "@/lib/latentora.functions";
+import { ChallengeDesigner, DesignedChallengeLab } from "@/components/latentora/designed-challenge";
 import { PAPER_RULES, scorePaperChallenge } from "@/lib/scoring";
 import type { CriterionStatus, Experiment, PaperChallengeInputs, SegmentationEvidence, WorkspaceData } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -46,7 +47,7 @@ function ExperimentPage() {
             Turn a hunch into <em className="text-gold-gradient">evidence</em>
           </>
         }
-        sub="The Paper Structure Challenge tests structural reasoning, resource efficiency and iterative prototyping. Your measurements are scored by fixed rules; SAM 3.1 only reports what it can see in your photo."
+        sub="Start with the classic Paper Structure Challenge, or have Muse Spark design a measurable challenge for any ability you want to prove. Your numbers are always scored by fixed rules; SAM 3.1 only reports what it can see in a photo."
       />
       <WorkspaceGate>{(ws, refresh, id) => <Lab ws={ws} refresh={refresh} id={id} />}</WorkspaceGate>
     </div>
@@ -64,26 +65,6 @@ const EMPTY: PaperChallengeInputs = {
   reflection: "",
 };
 
-async function resizeImage(file: File, max = 1280): Promise<string> {
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await new Promise<HTMLImageElement>((res, rej) => {
-      const i = new Image();
-      i.onload = () => res(i);
-      i.onerror = rej;
-      i.src = url;
-    });
-    const scale = Math.min(1, max / Math.max(img.width, img.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(img.width * scale);
-    canvas.height = Math.round(img.height * scale);
-    canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/jpeg", 0.85);
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
-
 function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: string }) {
   const [inputs, setInputs] = useState<PaperChallengeInputs>(EMPTY);
   const [photo, setPhoto] = useState<string | null>(null);
@@ -93,6 +74,9 @@ function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: 
   const fileRef = useRef<HTMLInputElement>(null);
   const { busy, run } = useBusy();
   const preview = scorePaperChallenge(inputs);
+  const [active, setActive] = useState<string>("paper");
+  const activeChallenge = ws.challenges.find((c) => c.id === active) ?? null;
+  const titles = Object.fromEntries(ws.challenges.map((c) => [c.id, c.title]));
 
   const set = (k: keyof PaperChallengeInputs) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setInputs((p) => ({ ...p, [k]: k === "reflection" ? e.target.value : Number(e.target.value) }));
@@ -127,6 +111,37 @@ function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: 
 
   return (
     <div className="space-y-10">
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Challenges">
+        <button
+          role="tab"
+          aria-selected={active === "paper"}
+          onClick={() => setActive("paper")}
+          className={tabCls(active === "paper")}
+        >
+          Paper Structure <span className="ml-1 text-muted-foreground">· classic</span>
+        </button>
+        {ws.challenges.map((c) => (
+          <button key={c.id} role="tab" aria-selected={active === c.id} onClick={() => setActive(c.id)} className={tabCls(active === c.id)}>
+            {c.title} <span className="ml-1 text-muted-foreground">· {c.capability}</span>
+          </button>
+        ))}
+        <button role="tab" aria-selected={active === "new"} onClick={() => setActive("new")} className={tabCls(active === "new")}>
+          <Wand2 className="mr-1 inline size-3.5 text-gold" /> Design a new challenge
+        </button>
+      </div>
+
+      {active === "new" ? (
+        <ChallengeDesigner
+          ws={ws}
+          id={id}
+          onCreated={(cid) => {
+            refresh();
+            setActive(cid);
+          }}
+        />
+      ) : activeChallenge ? (
+        <DesignedChallengeLab challenge={activeChallenge} id={id} refresh={refresh} onDeleted={() => setActive("paper")} />
+      ) : (
       <div className="grid gap-8 lg:grid-cols-[1fr_1.3fr]">
         <Panel>
           <p className="eyebrow">The challenge</p>
@@ -251,6 +266,7 @@ function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: 
           </div>
         </Panel>
       </div>
+      )}
 
       <div>
         <h2 className="mb-5 text-4xl">Results</h2>
@@ -259,7 +275,7 @@ function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: 
         ) : (
           <div className="space-y-6">
             {ws.experiments.map((e) => (
-              <ResultCard key={e.id} e={e} />
+              <ResultCard key={e.id} e={e} title={e.challenge_id ? (titles[e.challenge_id] ?? "Designed challenge") : e.challenge === "designed" ? "Designed challenge (deleted)" : "Paper Structure"} />
             ))}
             <Button asChild variant="outline">
               <Link to="/evolve">See how this changes your Atlas →</Link>
@@ -270,6 +286,12 @@ function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: 
     </div>
   );
 }
+
+const tabCls = (on: boolean) =>
+  cn(
+    "rounded-full border px-4 py-1.5 text-sm transition-colors",
+    on ? "border-gold bg-gold/10 text-foreground" : "border-border text-muted-foreground hover:border-gold/40",
+  );
 
 const STATUS_ICON: Record<CriterionStatus, React.ReactNode> = {
   met: <CheckCircle2 className="size-4 text-success" />,
@@ -282,14 +304,16 @@ const VERDICT_LABEL = {
   not_yet_supported: "Not yet supported",
 };
 
-function ResultCard({ e }: { e: Experiment }) {
+function ResultCard({ e, title }: { e: Experiment; title: string }) {
   const seg = e.evidence_mode === "sam" ? (e.segmentation as SegmentationEvidence) : null;
   const manual = e.evidence_mode === "manual" ? (e.segmentation as { manual_checks: string[]; note?: string } | null) : null;
   return (
     <article className="glass grid gap-6 rounded-3xl p-6 lg:grid-cols-[1.2fr_1fr]">
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-display text-2xl">Attempt · {new Date(e.created_at).toLocaleDateString()}</p>
+          <p className="font-display text-2xl">
+            {title} · {new Date(e.created_at).toLocaleDateString()}
+          </p>
           <Badge variant="tested">Rule-based score</Badge>
           {e.evidence_mode === "sam" ? <Badge variant="live">Live · sam-3.1</Badge> : <Badge variant="sample">Manual evidence · self-reported</Badge>}
         </div>

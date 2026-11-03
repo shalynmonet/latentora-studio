@@ -87,3 +87,42 @@ describe("Atlas keyword linking", () => {
     expect(matchesTestedCapability("Paper engineering", "Structural reasoning")).toBe(true);
   });
 });
+
+import { sanitizeSpec, scoreCustomChallenge } from "./challenge-rules";
+
+const rawSpec = {
+  title: "Five-minute pitch",
+  steps: ["Prepare", "Pitch"],
+  duration_minutes: 500,
+  measures: [
+    { label: "Ideas generated", unit: "ideas", direction: "at_least", target: 10, partial: 5 },
+    { label: "Pitch length", unit: "s", direction: "at_most", target: 60, partial: 90 },
+    { label: "Feedback points", unit: "points", direction: "at_least", target: 3, partial: 99 },
+  ],
+};
+
+describe("Designed challenge rules", () => {
+  it("rejects specs with fewer than 3 valid measures", () => {
+    expect(sanitizeSpec({ ...rawSpec, measures: rawSpec.measures.slice(0, 2) }, "Communication")).toBeNull();
+  });
+
+  it("caps duration at 90 minutes and repairs a partial threshold on the wrong side", () => {
+    const s = sanitizeSpec(rawSpec, "Communication")!;
+    expect(s.duration_minutes).toBe(90);
+    expect(s.measures[2]?.partial).toBe(1.5);
+  });
+
+  it("supports the capability only when every measure meets its target", () => {
+    const s = sanitizeSpec(rawSpec, "Communication")!;
+    const all = scoreCustomChallenge(s, { values: { ideas_generated: 12, pitch_length: 55, feedback_points: 3 }, reflection: "" });
+    expect(all.met_count).toBe(3);
+    expect(all.capabilities[0]).toMatchObject({ capability: "Communication", verdict: "supported" });
+  });
+
+  it("treats lower-is-better measures correctly and gives partial support", () => {
+    const s = sanitizeSpec(rawSpec, "Communication")!;
+    const r = scoreCustomChallenge(s, { values: { ideas_generated: 6, pitch_length: 120 }, reflection: "" });
+    expect(r.criteria.map((c) => c.status)).toEqual(["partial", "not_met", "not_met"]);
+    expect(r.capabilities[0]?.verdict).toBe("partially_supported");
+  });
+});

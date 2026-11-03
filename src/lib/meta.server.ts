@@ -89,6 +89,26 @@ export async function museImage(prompt: string): Promise<string> {
   return b64;
 }
 
+/** Muse Image edit/compose from a reference photo (JSON body with data URL); returns base64 JPEG. */
+export async function museImageEdit(prompt: string, imageDataUrl: string): Promise<string> {
+  const data = await post(
+    "/images/edits",
+    {
+      model: META_MODELS.image,
+      prompt,
+      images: [{ image_url: imageDataUrl }],
+      n: 1,
+      size: "1536x1024",
+      output_format: "jpeg",
+      reasoning_strength: "low",
+    },
+    150_000,
+  );
+  const b64 = data?.data?.[0]?.b64_json;
+  if (typeof b64 !== "string") throw new MetaUnavailableError("Muse Image returned no image");
+  return b64;
+}
+
 /** SAM 3.1 concept segmentation via the Responses API. Returns raw output text. */
 export async function samSegment(imageDataUrl: string, concept: string): Promise<string> {
   const data = await post("/responses", {

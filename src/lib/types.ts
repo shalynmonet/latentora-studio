@@ -91,6 +91,8 @@ export interface VisionBoard {
   image_url: string;
   source: ResultSource;
   saved: boolean;
+  /** True when the user's own photo was used as the reference for this board. */
+  from_photo: boolean;
   created_at: string;
 }
 
@@ -148,10 +150,52 @@ export interface SegmentationEvidence {
   observations: string[];
 }
 
+/** One measurable criterion in a designed challenge. Scored by fixed comparison only. */
+export interface ChallengeMeasure {
+  id: string;
+  label: string;
+  unit: string;
+  /** at_least: higher is better; at_most: lower is better. */
+  direction: "at_least" | "at_most";
+  target: number;
+  /** Threshold for a partial result (between "no effort" and target). */
+  partial: number;
+  how_to_measure: string;
+}
+
+export interface ChallengeSpec {
+  title: string;
+  capability: string;
+  why: string;
+  duration_minutes: number;
+  materials: string[];
+  steps: string[];
+  measures: ChallengeMeasure[];
+  /** Short noun phrase SAM can look for in an evidence photo, or null when a photo can't show anything useful. */
+  photo_subject: string | null;
+  safety_note: string;
+}
+
+export interface Challenge {
+  id: string;
+  capability: string;
+  title: string;
+  spec: ChallengeSpec;
+  source: ResultSource;
+  model: string | null;
+  created_at: string;
+}
+
+export interface CustomChallengeInputs {
+  values: Record<string, number>;
+  reflection: string;
+}
+
 export interface Experiment {
   id: string;
   challenge: string;
-  inputs: PaperChallengeInputs;
+  challenge_id: string | null;
+  inputs: PaperChallengeInputs | CustomChallengeInputs;
   score: PaperChallengeScore;
   evidence_mode: "sam" | "manual";
   segmentation: SegmentationEvidence | { manual_checks: string[]; note?: string } | null;
@@ -166,6 +210,7 @@ export interface WorkspaceData {
   opportunities: Opportunity[];
   boards: VisionBoard[];
   experiments: Experiment[];
+  challenges: Challenge[];
 }
 
 export interface ApiStatus {
