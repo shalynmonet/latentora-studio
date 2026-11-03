@@ -14,7 +14,263 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analyses: {
+        Row: {
+          created_at: string
+          id: string
+          model: string | null
+          result: Json
+          source: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          model?: string | null
+          result: Json
+          source: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          model?: string | null
+          result?: Json
+          source?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analyses_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experiments: {
+        Row: {
+          challenge: string
+          created_at: string
+          evidence_mode: string
+          id: string
+          inputs: Json
+          photo_url: string | null
+          score: Json
+          segmentation: Json | null
+          workspace_id: string
+        }
+        Insert: {
+          challenge: string
+          created_at?: string
+          evidence_mode: string
+          id?: string
+          inputs: Json
+          photo_url?: string | null
+          score: Json
+          segmentation?: Json | null
+          workspace_id: string
+        }
+        Update: {
+          challenge?: string
+          created_at?: string
+          evidence_mode?: string
+          id?: string
+          inputs?: Json
+          photo_url?: string | null
+          score?: Json
+          segmentation?: Json | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_cache: {
+        Row: {
+          fetched_at: string
+          payload: Json
+          query: string
+        }
+        Insert: {
+          fetched_at?: string
+          payload: Json
+          query: string
+        }
+        Update: {
+          fetched_at?: string
+          payload?: Json
+          query?: string
+        }
+        Relationships: []
+      }
+      opportunities: {
+        Row: {
+          company: string | null
+          created_at: string
+          description: string
+          external_id: string | null
+          id: string
+          location: string | null
+          match: Json | null
+          match_source: string | null
+          source: string
+          title: string
+          url: string | null
+          workspace_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          description?: string
+          external_id?: string | null
+          id?: string
+          location?: string | null
+          match?: Json | null
+          match_source?: string | null
+          source: string
+          title: string
+          url?: string | null
+          workspace_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          description?: string
+          external_id?: string | null
+          id?: string
+          location?: string | null
+          match?: Json | null
+          match_source?: string | null
+          source?: string
+          title?: string
+          url?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stories: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          kind: string
+          title: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          kind?: string
+          title: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          kind?: string
+          title?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stories_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vision_boards: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          opportunity_id: string | null
+          prompt: string
+          saved: boolean
+          source: string
+          title: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          opportunity_id?: string | null
+          prompt: string
+          saved?: boolean
+          source: string
+          title: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          opportunity_id?: string | null
+          prompt?: string
+          saved?: boolean
+          source?: string
+          title?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vision_boards_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vision_boards_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          is_demo: boolean
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_demo?: boolean
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_demo?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

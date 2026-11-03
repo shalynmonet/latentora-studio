@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793737957756,
+      "tag": "0000_latentora_core",
+      "breakpoints": true
+    }
+  ]
 }
