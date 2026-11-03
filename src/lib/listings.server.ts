@@ -1,7 +1,7 @@
 // Fetchers for free, official/public listing feeds. Server-only.
 // Remotive: public API. Jobicy: public API (credit + link back required).
 // Freelancer.com: public projects endpoint. OpenTrain: documented tokenless public API.
-import { formatPay, kindFromLabels } from "./listings";
+import { formatPay, kindFromLabels, matchesQuery } from "./listings";
 import type { JobListing, ListingProvider } from "./types";
 
 const UA = { "User-Agent": "Latentora/1.0 (+https://latentora.sha-i.com)", Accept: "application/json" };
@@ -65,9 +65,13 @@ async function jobicy(q: string): Promise<JobListing[]> {
 
 async function freelancer(q: string): Promise<JobListing[]> {
   type P = { id: number; title: string; seo_url: string; type: "fixed" | "hourly"; budget?: { minimum?: number; maximum?: number }; currency?: { code?: string }; time_submitted?: number; description?: string; preview_description?: string; jobs?: { name: string }[] };
-  const url = `https://www.freelancer.com/api/projects/0.1/projects/active/?limit=${PER_SOURCE}&full_description=true&job_details=true&compact=true${q ? `&query=${encodeURIComponent(q)}` : ""}`;
+  const url = `https://www.freelancer.com/api/projects/0.1/projects/active/?limit=30&full_description=true&job_details=true&compact=true${q ? `&query=${encodeURIComponent(q)}` : ""}`;
   const json = await getJSON<{ result?: { projects?: P[] } }>(url);
-  return (json.result?.projects ?? []).slice(0, PER_SOURCE).map((p) => ({
+  // Freelancer's search is loose, so keep only projects that actually mention the words.
+  return (json.result?.projects ?? [])
+    .filter((p) => matchesQuery(q, p.title, p.description, p.preview_description, p.jobs?.map((j) => j.name).join(" ")))
+    .slice(0, PER_SOURCE)
+    .map((p) => ({
     provider: "freelancer",
     external_id: `freelancer:${p.id}`,
     title: p.title,
@@ -111,4 +115,28 @@ async function opentrain(q: string): Promise<JobListing[]> {
   });
 }
 
-export const FETCHERS: Record<ListingProvider, (q: string) => Promise<JobListing[]>> = { remotive, jobicy, freelancer, opentrain };
+// Terac posts its paid expert gigs on its public Ashby job board (official posting API, no key).
+// The board has no search parameter, so we filter by keyword here.
+async function terac(q: string): Promise<JobListing[]> {
+  type J = { id: string; title: string; department?: string; employmentType?: string; location?: string; isRemote?: boolean; isListed?: boolean; publishedAt?: string; jobUrl: string; descriptionPlain?: string; compensation?: { scrapeableCompensationSalarySummary?: string | null; compensationTierSummary?: string | null } | null };
+  const json = await getJSON<{ jobs?: J[] }>("https://api.ashbyhq.com/posting-api/job-board/terac?includeCompensation=true");
+  return (json.jobs ?? [])
+    .filter((j) => j.isListed !== false && matchesQuery(q, j.title, j.department, j.descriptionPlain))
+    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
+    .slice(0, PER_SOURCE)
+    .map((j) => ({
+      provider: "terac" as const,
+      external_id: `terac:${j.id}`,
+      title: j.title,
+      company: "Terac",
+      url: j.jobUrl,
+      location: j.isRemote ? `Remote · ${j.location ?? ""}`.replace(/ · $/, "") : (j.location ?? ""),
+      category: j.department ?? "",
+      description: (j.descriptionPlain ?? "").replace(/\s+/g, " ").trim().slice(0, 4000),
+      published_at: j.publishedAt ?? "",
+      kind: kindFromLabels([j.employmentType]),
+      pay: j.compensation?.scrapeableCompensationSalarySummary || null,
+    }));
+}
+
+export const FETCHERS: Record<ListingProvider, (q: string) => Promise<JobListing[]>> = { remotive, jobicy, freelancer, opentrain, terac };

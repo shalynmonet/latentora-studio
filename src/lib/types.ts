@@ -57,7 +57,7 @@ export interface OpportunityMatch {
 }
 
 /** Free public listing feeds merged into one list on Explore. */
-export type ListingProvider = "remotive" | "jobicy" | "freelancer" | "opentrain";
+export type ListingProvider = "remotive" | "jobicy" | "freelancer" | "opentrain" | "terac";
 export type OpportunitySource = ListingProvider | "pasted" | "demo_sample";
 export type ListingKind = "job" | "contract";
 

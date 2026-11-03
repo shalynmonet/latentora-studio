@@ -7,6 +7,7 @@ export const PROVIDERS: { id: ListingProvider; name: string; url: string; cacheH
   { id: "jobicy", name: "Jobicy", url: "https://jobicy.com", cacheHours: 3 },
   { id: "freelancer", name: "Freelancer.com", url: "https://www.freelancer.com", cacheHours: 2 },
   { id: "opentrain", name: "OpenTrain AI", url: "https://www.opentrain.ai/jobs/", cacheHours: 2 },
+  { id: "terac", name: "Terac", url: "https://terac.com/opportunities", cacheHours: 3 },
 ];
 
 export const PROVIDER_NAME: Record<string, string> = Object.fromEntries(PROVIDERS.map((p) => [p.id, p.name]));
@@ -30,9 +31,20 @@ export function formatPay(min: number | null | undefined, max: number | null | u
   const hi = typeof max === "number" && max > 0 ? max : null;
   if (lo == null && hi == null) return null;
   const cur = (currency || "USD").toUpperCase();
-  const range = lo != null && hi != null && lo !== hi ? `${money(lo, cur)}–${money(hi, cur)}` : money((hi ?? lo)!, cur);
+  const hasSym = ["USD", "EUR", "GBP"].includes(cur);
+  const num = (n: number) => (hasSym ? money(n, cur) : money(n, cur).replace(` ${cur}`, ""));
+  const range = lo != null && hi != null && lo !== hi ? `${num(lo)}–${num(hi)}` : num((hi ?? lo)!);
+  const withCode = hasSym ? range : `${range} ${cur}`;
   const per = period ? ` ${period}` : "";
-  return `${range}${per}`;
+  return `${withCode}${per}`;
+}
+
+/** Keyword filter for sources without server-side search: every word must appear. */
+export function matchesQuery(q: string, ...fields: (string | null | undefined)[]): boolean {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return true;
+  const hay = fields.filter(Boolean).join(" ").toLowerCase();
+  return words.every((w) => hay.includes(w));
 }
 
 /** Mixes provider results round-robin so no single source dominates, and drops duplicates by title+company. */
