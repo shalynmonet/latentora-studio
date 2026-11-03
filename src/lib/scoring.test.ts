@@ -109,7 +109,7 @@ describe("Designed challenge rules", () => {
   it("caps duration at 90 minutes and repairs a partial threshold on the wrong side", () => {
     const s = sanitizeSpec(rawSpec, "Communication")!;
     expect(s.duration_minutes).toBe(90);
-    expect(s.measures[2].partial).toBe(1.5);
+    expect(s.measures[2]?.partial).toBe(1.5);
   });
 
   it("supports the capability only when every measure meets its target", () => {
@@ -123,6 +123,6 @@ describe("Designed challenge rules", () => {
     const s = sanitizeSpec(rawSpec, "Communication")!;
     const r = scoreCustomChallenge(s, { values: { ideas_generated: 6, pitch_length: 120 }, reflection: "" });
     expect(r.criteria.map((c) => c.status)).toEqual(["partial", "not_met", "not_met"]);
-    expect(r.capabilities[0].verdict).toBe("partially_supported");
+    expect(r.capabilities[0]?.verdict).toBe("partially_supported");
   });
 });

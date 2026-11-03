@@ -26,15 +26,20 @@ const slug = (s: string) =>
     .replace(/^_|_$/g, "")
     .slice(0, 40) || "measure";
 
+type Loose = { [k: string]: unknown } & Partial<Record<
+  "measures" | "label" | "target" | "partial" | "direction" | "unit" | "how_to_measure" | "steps" | "title" | "duration_minutes" | "photo_subject" | "why" | "materials" | "safety_note",
+  unknown
+>>;
+
 /** Validates and normalises a model-proposed spec. Returns null if it can't be scored fairly. */
 export function sanitizeSpec(raw: unknown, capability: string): ChallengeSpec | null {
   if (!raw || typeof raw !== "object") return null;
-  const r = raw as Record<string, unknown>;
+  const r = raw as Loose;
   const seen = new Set<string>();
   const measures: ChallengeMeasure[] = [];
   for (const m of Array.isArray(r.measures) ? r.measures : []) {
     if (!m || typeof m !== "object") continue;
-    const x = m as Record<string, unknown>;
+    const x = m as Loose;
     const label = clip(x.label, 80);
     const target = Number(x.target);
     let partial = Number(x.partial);
