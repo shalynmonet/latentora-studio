@@ -169,9 +169,11 @@ export type Database = {
           description: string
           external_id: string | null
           id: string
+          kind: string | null
           location: string | null
           match: Json | null
           match_source: string | null
+          pay: string | null
           source: string
           title: string
           url: string | null
@@ -183,9 +185,11 @@ export type Database = {
           description?: string
           external_id?: string | null
           id?: string
+          kind?: string | null
           location?: string | null
           match?: Json | null
           match_source?: string | null
+          pay?: string | null
           source: string
           title: string
           url?: string | null
@@ -197,9 +201,11 @@ export type Database = {
           description?: string
           external_id?: string | null
           id?: string
+          kind?: string | null
           location?: string | null
           match?: Json | null
           match_source?: string | null
+          pay?: string | null
           source?: string
           title?: string
           url?: string | null
