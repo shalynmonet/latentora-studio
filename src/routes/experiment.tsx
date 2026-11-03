@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { PageIntro, Panel, WorkspaceGate, useBusy } from "@/components/latentora/shared";
+import { PageIntro, Panel, WorkspaceGate, resizeImage, useBusy } from "@/components/latentora/shared";
 import { submitExperiment } from "@/lib/latentora.functions";
 import { PAPER_RULES, scorePaperChallenge } from "@/lib/scoring";
 import type { CriterionStatus, Experiment, PaperChallengeInputs, SegmentationEvidence, WorkspaceData } from "@/lib/types";
@@ -63,26 +63,6 @@ const EMPTY: PaperChallengeInputs = {
   build_minutes: 0,
   reflection: "",
 };
-
-async function resizeImage(file: File, max = 1280): Promise<string> {
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await new Promise<HTMLImageElement>((res, rej) => {
-      const i = new Image();
-      i.onload = () => res(i);
-      i.onerror = rej;
-      i.src = url;
-    });
-    const scale = Math.min(1, max / Math.max(img.width, img.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(img.width * scale);
-    canvas.height = Math.round(img.height * scale);
-    canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/jpeg", 0.85);
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
 
 function Lab({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; id: string }) {
   const [inputs, setInputs] = useState<PaperChallengeInputs>(EMPTY);
