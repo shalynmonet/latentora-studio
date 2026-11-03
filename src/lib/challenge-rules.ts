@@ -89,8 +89,6 @@ export function measureStatus(m: ChallengeMeasure, value: number | undefined): C
   const v = Number(value);
   if (!Number.isFinite(v) || v < 0) return "not_met";
   if (m.direction === "at_least") return v >= m.target ? "met" : v >= m.partial ? "partial" : "not_met";
-  // at_most: lower is better, but 0 means "not recorded" unless the target allows it.
-  if (v === 0 && value === undefined) return "not_met";
   return v <= m.target ? "met" : v <= m.partial ? "partial" : "not_met";
 }
 
