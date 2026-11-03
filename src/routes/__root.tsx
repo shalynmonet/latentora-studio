@@ -123,7 +123,7 @@ function RootComponent() {
         </a>
         . Generated images are imagined possibilities, not predictions.
       </footer>
-      <Toaster position="top-center" />
+      <Toaster position="top-center" theme="dark" />
     </QueryClientProvider>
   );
 }

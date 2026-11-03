@@ -79,3 +79,11 @@ describe("Capability Atlas", () => {
     expect(n?.originalStatus).toBe("hypothesized");
   });
 });
+
+describe("Atlas keyword linking", () => {
+  it("does not treat unrelated 'building' stories as structural testing", async () => {
+    const { matchesTestedCapability } = await import("./atlas");
+    expect(matchesTestedCapability("Community Library Building", "Structural reasoning")).toBe(false);
+    expect(matchesTestedCapability("Paper engineering", "Structural reasoning")).toBe(true);
+  });
+});

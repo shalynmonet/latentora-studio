@@ -22,8 +22,8 @@ export interface AtlasEdge {
 }
 
 const KEYWORDS: Record<string, string[]> = {
-  [TESTED_CAPABILITIES.structural]: ["structur", "engineer", "build", "making"],
-  [TESTED_CAPABILITIES.efficiency]: ["efficien", "resource", "optimi", "waste"],
+  [TESTED_CAPABILITIES.structural]: ["structur", "engineering"],
+  [TESTED_CAPABILITIES.efficiency]: ["efficien", "resource", "waste"],
   [TESTED_CAPABILITIES.iteration]: ["iterat", "prototyp", "experiment"],
 };
 
