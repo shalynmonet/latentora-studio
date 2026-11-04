@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Loader2, Radio } from "lucide-react";
+import { ArrowLeft, Loader2, Radio, Wand2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -105,7 +106,7 @@ function DemoPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {DEMO_PROFILES.map((p) => (
-          <ProfileColumn key={p.key} profile={p} run={runs[p.key]} />
+          <ProfileColumn key={`${p.key}-${runs[p.key].live ? "live" : "rec"}`} profile={p} run={runs[p.key]} />
         ))}
       </div>
 
@@ -138,9 +139,34 @@ function DemoPage() {
   );
 }
 
+type Design = { rationale: Rationale; blueprint: Blueprint; live: boolean };
+
 function ProfileColumn({ profile, run }: { profile: DemoProfile; run: Run }) {
-  const concept = run.discovery.concepts[0];
+  const concepts = run.discovery.concepts;
+  const first = concepts[0];
+  const [sel, setSel] = useState(0);
+  const [designs, setDesigns] = useState<Record<string, Design>>(
+    first ? { [first.id]: { rationale: run.rationale, blueprint: run.blueprint, live: run.live } } : {},
+  );
+  const [busy, setBusy] = useState(false);
+  const concept = concepts[sel];
+  const design = concept ? designs[concept.id] : undefined;
   const evidence = [...profile.evidence, ...preferenceEvidence(profile.preferences)];
+
+  const designLive = async () => {
+    if (!concept) return;
+    setBusy(true);
+    try {
+      const res = await demoDesign({ data: { profile: profile.key, concept } });
+      setDesigns((d) => ({ ...d, [concept.id]: { ...res, live: true } }));
+      toast.success(`${concept.name} was designed live.`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "The live design failed. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="space-y-5">
       <Panel>
@@ -157,30 +183,71 @@ function ProfileColumn({ profile, run }: { profile: DemoProfile; run: Run }) {
       </Panel>
 
       <div>
-        <p className="eyebrow mb-3">Resulting invention (first of three ideas)</p>
-        {concept && <ConceptCard concept={concept} index={profile.key === "A" ? 0 : 1} evidence={profile.evidence} />}
-        <p className="mt-2 text-xs text-muted-foreground">
-          Other ideas: {run.discovery.concepts.slice(1).map((c) => c.name).join(" · ")}
-        </p>
+        <p className="eyebrow mb-3">Their three ideas</p>
+        <div role="tablist" aria-label={`${profile.name}'s ideas`} className="mb-4 flex flex-wrap gap-2">
+          {concepts.map((c, i) => (
+            <button
+              key={c.id}
+              type="button"
+              role="tab"
+              aria-selected={sel === i}
+              onClick={() => setSel(i)}
+              className={cn(
+                "rounded-full border px-4 py-1.5 text-sm transition-colors",
+                sel === i ? "border-gold bg-gold/15 text-foreground" : "border-border text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <span className="mr-1.5 font-display text-gold">{["I", "II", "III"][i]}</span>
+              {c.name}
+            </button>
+          ))}
+        </div>
+        {concept && <ConceptCard key={concept.id} concept={concept} index={sel} evidence={profile.evidence} />}
       </div>
 
-      <Panel>
-        <h3 className="text-3xl">Why it was designed this way</h3>
-        <div className="mt-4">
-          <RationaleView rationale={run.rationale} evidence={evidence} />
-        </div>
-      </Panel>
+      {design ? (
+        <>
+          <Panel>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-3xl">Why it was designed this way</h3>
+              <SourceBadge source={design.live ? "meta_live" : "demo_sample"} model={design.rationale.model} />
+            </div>
+            <div className="mt-4">
+              <RationaleView rationale={design.rationale} evidence={evidence} />
+            </div>
+          </Panel>
 
-      <details className="glass rounded-3xl p-6">
-        <summary className="cursor-pointer font-display text-2xl">Full blueprint &amp; build prompt</summary>
-        <div className="mt-6">
-          <BlueprintSections b={run.blueprint} />
-          <pre className="mt-6 max-h-96 overflow-auto whitespace-pre-wrap rounded-2xl bg-background/50 p-4 text-xs">{run.blueprint.build_prompt}</pre>
-          <div className="mt-4">
-            <PromptActions prompt={run.blueprint.build_prompt} onDownload={() => downloadBlueprint(run.blueprint, run.rationale, evidence, profile.evidence.map((e) => ({ id: e.id, text: e.text })))} />
-          </div>
-        </div>
-      </details>
+          <details className="glass rounded-3xl p-6">
+            <summary className="cursor-pointer font-display text-2xl">Full blueprint &amp; build prompt</summary>
+            <div className="mt-6">
+              <BlueprintSections b={design.blueprint} />
+              <pre className="mt-6 max-h-96 overflow-auto whitespace-pre-wrap rounded-2xl bg-background/50 p-4 text-xs">{design.blueprint.build_prompt}</pre>
+              <div className="mt-4">
+                <PromptActions
+                  prompt={design.blueprint.build_prompt}
+                  onDownload={() => downloadBlueprint(design.blueprint, design.rationale, evidence, profile.evidence.map((e) => ({ id: e.id, text: e.text })))}
+                />
+              </div>
+            </div>
+          </details>
+        </>
+      ) : (
+        <Panel>
+          <h3 className="text-3xl">Not designed yet</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            The design reasons and blueprint for this idea haven't been written. Muse Spark can do it now through the same pipeline, using{" "}
+            {profile.name.split(" ")[0]}'s preferences. It takes about a minute.
+          </p>
+          <Button className="mt-4" onClick={designLive} disabled={busy}>
+            {busy ? <Loader2 className="animate-spin" /> : <Wand2 />} Design this one live
+          </Button>
+          {busy && (
+            <p role="status" className="mt-3 text-sm text-muted-foreground">
+              Writing the design reasons and blueprint…
+            </p>
+          )}
+        </Panel>
+      )}
     </div>
   );
 }
