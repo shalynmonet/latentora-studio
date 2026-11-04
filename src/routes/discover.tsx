@@ -78,7 +78,7 @@ function Discover({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void;
     const res = await analyze.run(() => analyzeStories({ data: { id } }));
     if (res) {
       if (res.notice) toast.warning(res.notice);
-      else toast.success("Muse Spark finished reading your story.");
+      else toast.success("Muse Spark finished the analysis.");
       refresh();
     }
   };

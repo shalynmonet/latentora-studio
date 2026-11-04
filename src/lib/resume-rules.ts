@@ -244,6 +244,9 @@ export function resumeForAnalysis(resume: { result: ResumeAnalysisResult; review
   if (!resume || !resume.result.passages.length) return null;
   const review = resume.review ?? {};
   const rejected = resume.result.findings.filter((f) => review[f.id]?.decision === "rejected").map((f) => f.name);
+  const confirmed = resume.result.findings
+    .filter((f) => review[f.id]?.decision === "confirmed")
+    .map((f) => (review[f.id]?.name ?? "").trim() || f.name);
   const roles = resume.result.profile.roles.map(
     (r) => `- ${r.title}${r.organization ? ` at ${r.organization}` : ""}${r.period ? ` (${r.period})` : ""}`,
   );
@@ -255,7 +258,7 @@ export function resumeForAnalysis(resume: { result: ResumeAnalysisResult; review
   ]
     .filter(Boolean)
     .join("\n\n");
-  return { text, rejected };
+  return { text, rejected, confirmed };
 }
 
 /** Remove capabilities the person rejected in their résumé review (by name). */

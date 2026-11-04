@@ -44,6 +44,11 @@ describe("résumé alone unlocks the capability analysis", () => {
     expect(r?.text).toContain("Coordinator at Food Bank");
   });
 
+  it("passes confirmed names (including edits) so the same ability isn't listed twice", () => {
+    const r = resumeForAnalysis({ ...resume({ f1: { decision: "confirmed" } }), review: { f1: { decision: "confirmed", name: "Volunteer leadership" } } });
+    expect(r?.confirmed).toEqual(["Volunteer leadership"]);
+  });
+
   it("is unavailable without a résumé", () => {
     expect(resumeForAnalysis(null)).toBeNull();
   });
