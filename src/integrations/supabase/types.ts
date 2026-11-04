@@ -304,6 +304,56 @@ export type Database = {
           },
         ]
       }
+      resumes: {
+        Row: {
+          created_at: string
+          file_kind: string
+          file_name: string
+          id: string
+          model: string | null
+          quotes_checked: boolean
+          result: Json
+          review: Json
+          reviewed_at: string | null
+          source: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_kind: string
+          file_name: string
+          id?: string
+          model?: string | null
+          quotes_checked?: boolean
+          result: Json
+          review?: Json
+          reviewed_at?: string | null
+          source: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          file_kind?: string
+          file_name?: string
+          id?: string
+          model?: string | null
+          quotes_checked?: boolean
+          result?: Json
+          review?: Json
+          reviewed_at?: string | null
+          source?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resumes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stories: {
         Row: {
           created_at: string
