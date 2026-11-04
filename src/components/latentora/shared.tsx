@@ -48,7 +48,7 @@ export function SiteHeader() {
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-repeat-x"
-        style={{ backgroundImage: `url(${headerPattern.url})`, backgroundSize: "auto 180px", backgroundPosition: "center top" }}
+        style={{ backgroundImage: `url(${headerPattern.url})`, backgroundSize: "auto 90px", backgroundRepeat: "repeat-x", backgroundPosition: "center top" }}
       />
       <div aria-hidden className="absolute inset-0 -z-10 bg-background/55" />
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-5 py-3">
