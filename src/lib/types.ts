@@ -28,6 +28,8 @@ export interface Capability {
   status: "demonstrated" | "hypothesized";
   evidence: { story_title: string; detail: string }[];
   rationale: string;
+  /** Set when the capability (or part of its evidence) came from an approved résumé finding. */
+  origin?: "stories" | "resume" | "both";
 }
 
 export interface AnalysisResult {
@@ -220,6 +222,58 @@ export interface Experiment {
   created_at: string;
 }
 
+/* ------------------------------ résumé ------------------------------ */
+
+export type ResumeClassification = "direct" | "hypothesis" | "insufficient";
+
+/** A verbatim excerpt from the résumé. `verified` = found in the document text (null when text couldn't be read). */
+export interface ResumePassage {
+  id: string;
+  quote: string;
+  verified: boolean | null;
+}
+
+export interface ResumeFinding {
+  id: string;
+  name: string;
+  category: CapabilityCategory;
+  classification: ResumeClassification;
+  /** True when the résumé names this skill outright; false = implied, not named ("beyond the résumé"). */
+  named_in_resume: boolean;
+  explanation: string;
+  passage_ids: string[];
+}
+
+export interface ResumeProfile {
+  roles: { title: string; organization: string; period: string; responsibilities: string[]; passage_ids: string[] }[];
+  education: { credential: string; institution: string; period: string; passage_ids: string[] }[];
+  projects: { name: string; detail: string; passage_ids: string[] }[];
+  accomplishments: { text: string; passage_ids: string[] }[];
+  skills_named: { name: string; passage_ids: string[] }[];
+}
+
+export interface ResumeAnalysisResult {
+  passages: ResumePassage[];
+  profile: ResumeProfile;
+  findings: ResumeFinding[];
+  beyond: { headline: string; insight: string; connections: { between: string[]; insight: string }[] };
+}
+
+export type ResumeDecision = { decision: "confirmed" | "rejected"; name?: string };
+
+export interface ResumeRecord {
+  id: string;
+  file_name: string;
+  file_kind: "pdf" | "docx";
+  source: ResultSource;
+  model: string | null;
+  quotes_checked: boolean;
+  result: ResumeAnalysisResult;
+  review: Record<string, ResumeDecision>;
+  reviewed_at: string | null;
+  created_at: string;
+}
+
 export interface WorkspaceData {
   workspace: { id: string; display_name: string; is_demo: boolean };
   stories: Story[];
@@ -228,6 +282,7 @@ export interface WorkspaceData {
   boards: VisionBoard[];
   experiments: Experiment[];
   challenges: Challenge[];
+  resume: ResumeRecord | null;
 }
 
 export interface ApiStatus {
