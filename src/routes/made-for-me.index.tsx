@@ -35,7 +35,7 @@ function MadeForMePage() {
             What if the tool you need <em className="text-gold-gradient">doesn't exist yet?</em>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground motion-safe:animate-rise">
-            Latentora discovers what could make your life easier, your ambitions more achievable, and your possibilities bigger—then
+            Latentora discovers what could make your life easier, your ambitions more achievable and your possibilities bigger... Then
             designs it specifically for you.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -51,8 +51,8 @@ function MadeForMePage() {
             </Button>
           </div>
           <p className="mt-6 max-w-2xl text-xs text-muted-foreground">
-            Not a startup idea generator or a job board. You get a personal tool design and a ready-to-paste prompt for an AI app builder —
-            built around what you've told Latentora, never invented details.
+            Not a startup idea generator or a job board. You get a personal tool design and a ready-to-paste prompt for an AI app builder,
+            built around what you've told Latentora.
           </p>
           <div className="mt-6">
             <WorkspaceSwitcher />
