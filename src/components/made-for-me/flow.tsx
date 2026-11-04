@@ -35,6 +35,7 @@ import {
   updateInvention,
 } from "@/lib/made-for-me.functions";
 import { preferenceEvidence } from "@/lib/made-for-me";
+import { BuildWithMuse } from "./build-with-muse";
 import type { ApprovedDetail, Builder, Customization, Invention, InventionFeedback, Pathway, PreferenceKey, ToolConcept } from "@/lib/made-for-me";
 import { cn } from "@/lib/utils";
 
@@ -650,6 +651,8 @@ function Final({ workspaceId, inv, set, onRefine, onNew }: { workspaceId: string
           A blueprint is a plan, not proof. Nothing here shows the tool works or is accessible until you build and try it.
         </p>
       </article>
+
+      <BuildWithMuse workspaceId={workspaceId} inv={inv} set={set} />
 
       <Feedback workspaceId={workspaceId} inv={inv} set={set} />
     </div>

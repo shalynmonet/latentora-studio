@@ -288,6 +288,18 @@ export const submitInventionFeedback = createServerFn({ method: "POST" })
     return patchInvention(data.id, data.inventionId, { revision });
   });
 
+/* --------------------------- Build with Muse --------------------------- */
+
+export const buildWithMuse = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ id: uuid, inventionId: uuid }).parse(d))
+  .handler(async ({ data }) => {
+    const inv = await loadInvention(data.id, data.inventionId);
+    if (!inv.blueprint) throw new Error("Generate and review your blueprint first.");
+    const { runMuseBuild } = await import("./build-with-muse.server");
+    const build = await runMuseBuild(inv.blueprint);
+    return patchInvention(data.id, data.inventionId, { build });
+  });
+
 /* ----------------------------- judge demo ----------------------------- */
 
 const profileKey = z.enum(["A", "B"]);
