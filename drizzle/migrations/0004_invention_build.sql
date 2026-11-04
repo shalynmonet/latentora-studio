@@ -1,0 +1,1 @@
+alter table public.inventions add column build jsonb;

@@ -150,6 +150,7 @@ export type Database = {
           answers: Json
           approved_details: Json | null
           blueprint: Json | null
+          build: Json | null
           created_at: string
           customization: Json | null
           discovery: Json | null
@@ -173,6 +174,7 @@ export type Database = {
           answers?: Json
           approved_details?: Json | null
           blueprint?: Json | null
+          build?: Json | null
           created_at?: string
           customization?: Json | null
           discovery?: Json | null
@@ -196,6 +198,7 @@ export type Database = {
           answers?: Json
           approved_details?: Json | null
           blueprint?: Json | null
+          build?: Json | null
           created_at?: string
           customization?: Json | null
           discovery?: Json | null
