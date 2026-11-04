@@ -44,7 +44,7 @@ function DiscoverPage() {
             The story you've <em className="text-gold-gradient">already written</em>
           </>
         }
-        sub="Add three or more projects, experiences, interests or accomplishments. Muse Spark looks for the abilities inside them — and tells you which are evidenced and which are only hunches."
+        sub="Add your résumé, or three or more projects, experiences, interests or accomplishments — or both. Muse Spark looks for the abilities inside them — and tells you which are evidenced and which are only hunches."
       >
         <WorkspaceSwitcher />
       </PageIntro>
