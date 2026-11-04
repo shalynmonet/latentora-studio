@@ -29,6 +29,7 @@ export default defineConfig({
         "@tanstack/react-query",
         "jszip",
         "acorn",
+        "unpdf",
       ],
     },
   },
