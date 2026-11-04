@@ -12,7 +12,7 @@ import sampleBoard1 from "@/assets/sample-board-1.jpg";
 import sampleBoard2 from "@/assets/sample-board-2.jpg";
 import logoIcon from "@/assets/latentora_icon.png.asset.json";
 import logoName from "@/assets/latentora_name.png.asset.json";
-import headerPattern from "@/assets/houndstooth_header_strip.jpg.asset.json";
+import headerPattern from "@/assets/houndstooth_header_band.jpg.asset.json";
 
 export const ASSET_IMAGES: Record<string, string> = {
   "asset:sample-board-1": sampleBoard1,
@@ -48,7 +48,7 @@ export function SiteHeader() {
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-repeat-x"
-        style={{ backgroundImage: `url(${headerPattern.url})`, backgroundSize: "auto 160px", backgroundPosition: "center top" }}
+        style={{ backgroundImage: `url(${headerPattern.url})`, backgroundSize: "auto 180px", backgroundPosition: "center top" }}
       />
       <div aria-hidden className="absolute inset-0 -z-10 bg-background/55" />
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-5 py-3">
