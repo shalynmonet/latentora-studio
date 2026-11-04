@@ -223,9 +223,9 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
           <ul className="space-y-4">
             {demonstrated.map((c) => (
               <li key={c.name}>
-                <p className="font-display text-xl">
+                <div className="font-display text-xl">
                   {c.name} <ResumeTag origin={c.origin} />
-                </p>
+                </div>
                 <ul className="mt-1 space-y-1">
                   {c.evidence.map((e, i) => (
                     <li key={i} className="text-xs text-muted-foreground">
@@ -245,9 +245,9 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
           <ul className="space-y-4">
             {hypothesized.map((c) => (
               <li key={c.name}>
-                <p className="font-display text-xl">
+                <div className="font-display text-xl">
                   {c.name} <ResumeTag origin={c.origin} />
-                </p>
+                </div>
                 <p className="text-xs text-muted-foreground">{c.rationale}</p>
               </li>
             ))}
