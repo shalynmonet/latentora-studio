@@ -44,7 +44,7 @@ function DiscoverPage() {
             The story you've <em className="text-gold-gradient">already written</em>
           </>
         }
-        sub="Add three or more projects, experiences, interests or accomplishments. Muse Spark looks for the abilities inside them — and tells you which are evidenced and which are only hunches."
+        sub="Add your résumé, or three or more projects, experiences, interests or accomplishments — or both. Muse Spark looks for the abilities inside them — and tells you which are evidenced and which are only hunches."
       >
         <WorkspaceSwitcher />
       </PageIntro>
@@ -78,12 +78,13 @@ function Discover({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void;
     const res = await analyze.run(() => analyzeStories({ data: { id } }));
     if (res) {
       if (res.notice) toast.warning(res.notice);
-      else toast.success("Muse Spark finished reading your story.");
+      else toast.success("Muse Spark finished the analysis.");
       refresh();
     }
   };
 
-  const enough = ws.stories.length >= 3;
+  const hasResume = Boolean(ws.resume?.result.passages.length);
+  const enough = ws.stories.length >= 3 || hasResume;
 
   return (
     <div className="space-y-10">
@@ -134,7 +135,7 @@ function Discover({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void;
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-2xl">Your stories ({ws.stories.length})</h3>
-            {!enough && <span className="text-xs text-muted-foreground">{3 - ws.stories.length} more to unlock analysis</span>}
+            {!enough && <span className="text-xs text-muted-foreground">Add a résumé above, or {3 - ws.stories.length} more stor{3 - ws.stories.length === 1 ? "y" : "ies"}, to unlock analysis</span>}
           </div>
           {ws.stories.length === 0 && (
             <p className="text-sm text-muted-foreground">Nothing yet. Start with something you're quietly proud of.</p>
@@ -163,7 +164,7 @@ function Discover({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void;
           <Button size="lg" className="w-full" disabled={!enough || analyze.busy} onClick={runAnalysis}>
             {analyze.busy ? (
               <>
-                <Loader2 className="animate-spin" /> Muse Spark is reading your stories…
+                <Loader2 className="animate-spin" /> Muse Spark is reading {hasResume && ws.stories.length ? "your stories and résumé" : hasResume ? "your résumé" : "your stories"}…
               </>
             ) : (
               <>
@@ -196,7 +197,7 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
         </div>
         <h3 className="text-3xl">{busy ? "Mapping your stars…" : "Your capability map appears here"}</h3>
         <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-          Add at least three stories, then run the analysis. It usually takes 10–30 seconds.
+          Add your résumé or at least three stories, then run the analysis. It usually takes 10–30 seconds.
         </p>
       </Panel>
     );
@@ -211,20 +212,20 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
           <SourceBadge source={a.source} model={a.model} />
         </div>
         <p className="mt-3 font-display text-2xl leading-snug">
-          {r.summary || "These capabilities come from the résumé findings you confirmed. Add stories and run the analysis to see the fuller picture."}
+          {r.summary || "These capabilities come from the résumé findings you confirmed. Press “Analyse with Muse Spark” to see the fuller picture."}
         </p>
       </Panel>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Panel className="p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Badge variant="evidence">Evidenced in your stories</Badge>
+            <Badge variant="evidence">{ws.resume ? "Evidenced in your stories or résumé" : "Evidenced in your stories"}</Badge>
           </div>
           <ul className="space-y-4">
             {demonstrated.map((c) => (
               <li key={c.name}>
                 <div className="font-display text-xl">
-                  {c.name} <ResumeTag origin={c.origin} />
+                  {c.name} <ResumeTag origin={c.origin} hasStories={ws.stories.length > 0} />
                 </div>
                 <ul className="mt-1 space-y-1">
                   {c.evidence.map((e, i) => (
@@ -246,7 +247,7 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
             {hypothesized.map((c) => (
               <li key={c.name}>
                 <div className="font-display text-xl">
-                  {c.name} <ResumeTag origin={c.origin} />
+                  {c.name} <ResumeTag origin={c.origin} hasStories={ws.stories.length > 0} />
                 </div>
                 <p className="text-xs text-muted-foreground">{c.rationale}</p>
               </li>
@@ -319,11 +320,11 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
   );
 }
 
-function ResumeTag({ origin }: { origin?: "stories" | "resume" | "both" | undefined }) {
+function ResumeTag({ origin, hasStories }: { origin?: "stories" | "resume" | "both" | undefined; hasStories: boolean }) {
   if (origin !== "resume" && origin !== "both") return null;
   return (
     <Badge variant="outline" className="ml-1 align-middle text-[10px]">
-      {origin === "both" ? "Stories + résumé" : "From your résumé"}
+      {origin === "both" && hasStories ? "Stories + résumé" : "From your résumé"}
     </Badge>
   );
 }

@@ -234,3 +234,35 @@ export function mergeResumeIntoAnalysis(
   }
   return { ...base, result: { ...base.result, capabilities: caps } };
 }
+
+/**
+ * What the main capability analysis may read from the résumé: the verified quoted passages and the
+ * roles/education Muse Spark already cited — never the original file. Findings the person rejected
+ * are returned so the analysis can drop them again.
+ */
+export function resumeForAnalysis(resume: { result: ResumeAnalysisResult; review: Record<string, ResumeDecision> | null } | null) {
+  if (!resume || !resume.result.passages.length) return null;
+  const review = resume.review ?? {};
+  const rejected = resume.result.findings.filter((f) => review[f.id]?.decision === "rejected").map((f) => f.name);
+  const confirmed = resume.result.findings
+    .filter((f) => review[f.id]?.decision === "confirmed")
+    .map((f) => (review[f.id]?.name ?? "").trim() || f.name);
+  const roles = resume.result.profile.roles.map(
+    (r) => `- ${r.title}${r.organization ? ` at ${r.organization}` : ""}${r.period ? ` (${r.period})` : ""}`,
+  );
+  const education = resume.result.profile.education.map((e) => `- ${e.credential}${e.institution ? `, ${e.institution}` : ""}`);
+  const text = [
+    roles.length ? `Roles:\n${roles.join("\n")}` : "",
+    education.length ? `Education:\n${education.join("\n")}` : "",
+    `Quoted passages:\n${resume.result.passages.map((p) => `- "${p.quote}"`).join("\n")}`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+  return { text, rejected, confirmed };
+}
+
+/** Remove capabilities the person rejected in their résumé review (by name). */
+export function dropRejected<T extends { name: string }>(caps: T[], rejected: string[]): T[] {
+  const r = new Set(rejected.map(nameKey));
+  return caps.filter((c) => !r.has(nameKey(c.name)));
+}
