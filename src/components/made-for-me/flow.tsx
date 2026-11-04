@@ -49,7 +49,7 @@ function Working({ label }: { label: string }) {
   );
 }
 
-export function MadeForMeFlow({ workspaceId, inventionId }: { workspaceId: string; inventionId?: string }) {
+export function MadeForMeFlow({ workspaceId, inventionId }: { workspaceId: string; inventionId?: string | undefined }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const open = (inv?: string) => navigate({ to: "/made-for-me", search: inv ? { i: inv } : {}, replace: false });
