@@ -12,7 +12,7 @@ import sampleBoard1 from "@/assets/sample-board-1.jpg";
 import sampleBoard2 from "@/assets/sample-board-2.jpg";
 import logoIcon from "@/assets/latentora_icon.png.asset.json";
 import logoName from "@/assets/latentora_name.png.asset.json";
-import headerPattern from "@/assets/houndstooth_violet_header_band.jpg.asset.json";
+import headerPattern from "@/assets/houndstooth_violet_small_header_band.jpg.asset.json";
 
 export const ASSET_IMAGES: Record<string, string> = {
   "asset:sample-board-1": sampleBoard1,
