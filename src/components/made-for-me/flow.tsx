@@ -414,7 +414,10 @@ function Customize({ workspaceId, inv, concept, onBack, onDone }: { workspaceId:
   const { busy, run } = useBusy();
 
   const go = async () => {
-    if (outcome.trim().length < 3) return toast.error("Describe what you'd like this tool to make possible.");
+    if (outcome.trim().length < 3) {
+      toast.error("Describe what you'd like this tool to make possible.");
+      return;
+    }
     const res = await run(() =>
       designForMe({
         data: {

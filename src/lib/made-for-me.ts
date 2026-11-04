@@ -291,7 +291,7 @@ export function sanitizeConcepts(raw: unknown, evidence: EvidenceItem[], round: 
   if (!Array.isArray(raw)) return [];
   const out: ToolConcept[] = [];
   raw.slice(0, 3).forEach((c, i) => {
-    const o = (c ?? {}) as Record<string, unknown>;
+    const o = (c ?? {}) as Partial<Record<"name" | "what_it_does" | "why_for_you" | "evidence_ids" | "what_becomes_possible" | "differs_from_generic" | "assumptions", unknown>>;
     const evidence_ids = knownIds(o.evidence_ids, evidence);
     const name = str(o.name, 80);
     const what = str(o.what_it_does);
@@ -314,7 +314,7 @@ export function sanitizeNeeds(raw: unknown, evidence: EvidenceItem[]): InferredN
   if (!Array.isArray(raw)) return [];
   const byId = new Map(evidence.map((e) => [e.id, e]));
   return raw.slice(0, 6).flatMap((n, i) => {
-    const o = (n ?? {}) as Record<string, unknown>;
+    const o = (n ?? {}) as Partial<Record<"need" | "evidence_ids", unknown>>;
     const need = str(o.need, 240);
     if (!need) return [];
     const evidence_ids = knownIds(o.evidence_ids, evidence);
@@ -335,7 +335,7 @@ export function decisionBasis(ids: string[], evidence: EvidenceItem[]): DesignDe
 export function sanitizeDecisions(raw: unknown, evidence: EvidenceItem[]): DesignDecision[] {
   if (!Array.isArray(raw)) return [];
   return raw.slice(0, 8).flatMap((d, i) => {
-    const o = (d ?? {}) as Record<string, unknown>;
+    const o = (d ?? {}) as Partial<Record<"because" | "decision" | "benefit" | "evidence_ids", unknown>>;
     const decision = str(o.decision, 400);
     const evidence_ids = knownIds(o.evidence_ids, evidence);
     if (!decision || evidence_ids.length === 0) return [];
@@ -381,7 +381,7 @@ const list = (items: string[]) => items.map((i) => `- ${i}`).join("\n");
 
 /** One coherent, copy-ready prompt. Accessibility requirements are always included verbatim. */
 export function assembleBuildPrompt(b: PromptParts, customInstructions = ""): string {
-  const framing = BUILDERS.find((x) => x.key === b.builder)?.framing ?? BUILDERS[2].framing;
+  const framing = BUILDERS.find((x) => x.key === b.builder)?.framing ?? BUILDERS[2]!.framing;
   const a11y = Array.from(new Set([...accessibilityRequirements(b.preferences, customInstructions), ...b.accessibility]));
   const features = (["must", "should", "could"] as const)
     .map((p) => {

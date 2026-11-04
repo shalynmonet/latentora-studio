@@ -244,7 +244,7 @@ export const updateInvention = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const inv = await loadInvention(data.id, data.inventionId);
-    const patch: Record<string, unknown> = {};
+    const patch: { saved?: boolean; blueprint?: Blueprint } = {};
     if (data.saved !== undefined) patch.saved = data.saved;
     if (data.build_prompt !== undefined && inv.blueprint) patch.blueprint = { ...inv.blueprint, build_prompt: data.build_prompt } satisfies Blueprint;
     return patchInvention(data.id, data.inventionId, patch);

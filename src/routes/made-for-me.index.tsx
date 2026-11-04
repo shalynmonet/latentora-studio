@@ -6,7 +6,7 @@ import { MadeForMeFlow } from "@/components/made-for-me/flow";
 
 export const Route = createFileRoute("/made-for-me/")({
   validateSearch: (s: Record<string, unknown>): { i?: string } =>
-    typeof s.i === "string" && /^[0-9a-f-]{36}$/i.test(s.i) ? { i: s.i } : {},
+    typeof s["i"] === "string" && /^[0-9a-f-]{36}$/i.test(s["i"]) ? { i: s["i"] } : {},
   head: () => ({
     meta: [
       { title: "Made for Me — Personal tools you haven't imagined yet · Latentora" },

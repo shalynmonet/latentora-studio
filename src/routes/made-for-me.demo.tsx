@@ -36,7 +36,7 @@ interface Run {
 // NOT live now, so they're relabelled as sample data.
 const RECORDED_AT = (recorded as { recorded_at: string }).recorded_at;
 const replay = (k: "A" | "B"): Run => {
-  const p = (recorded as unknown as { profiles: Record<string, { discovery: Discovery; rationale: Rationale; blueprint: Blueprint }> }).profiles[k];
+  const p = (recorded as unknown as { profiles: Record<string, { discovery: Discovery; rationale: Rationale; blueprint: Blueprint }> }).profiles[k]!;
   return {
     discovery: { ...p.discovery, source: "demo_sample" },
     rationale: { ...p.rationale, source: "demo_sample" },
@@ -56,10 +56,10 @@ function DemoPage() {
       setStage("Muse Spark is proposing tools for both people…");
       const discs = await Promise.all(DEMO_PROFILES.map((p) => demoDiscover({ data: { profile: p.key } })));
       setStage("Designing and writing both blueprints…");
-      const designs = await Promise.all(DEMO_PROFILES.map((p, i) => demoDesign({ data: { profile: p.key, concept: discs[i].concepts[0] } })));
+      const designs = await Promise.all(DEMO_PROFILES.map((p, i) => demoDesign({ data: { profile: p.key, concept: discs[i]!.concepts[0]! } })));
       setRuns({
-        A: { discovery: discs[0], ...designs[0], live: true },
-        B: { discovery: discs[1], ...designs[1], live: true },
+        A: { discovery: discs[0]!, ...designs[0]!, live: true },
+        B: { discovery: discs[1]!, ...designs[1]!, live: true },
       });
       toast.success("Both profiles ran live through the same pipeline.");
     } catch (e) {

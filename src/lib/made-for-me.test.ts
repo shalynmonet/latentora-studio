@@ -46,7 +46,7 @@ describe("Made for Me rules", () => {
       1,
     );
     expect(out.map((c) => c.name)).toEqual(["A"]);
-    expect(out[0].evidence_ids).toEqual(["s1"]);
+    expect(out[0]?.evidence_ids).toEqual(["s1"]);
   });
 
   it("labels a need as stated only when every cited item is the person's own words", () => {
@@ -57,8 +57,8 @@ describe("Made for Me rules", () => {
       ],
       evidence,
     );
-    expect(a.basis).toBe("stated");
-    expect(b.basis).toBe("hypothesis");
+    expect(a?.basis).toBe("stated");
+    expect(b?.basis).toBe("hypothesis");
   });
 
   it("derives decision basis from evidence kinds", () => {
