@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ExternalLink, Loader2, Plus, Radar, Search, Trash2, Wand2 } from "lucide-react";
-import { useState } from "react";
+import { ExternalLink, Loader2, Plus, Radar, Search, Sparkles, Trash2, Wand2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyState, PageIntro, Panel, SourceBadge, WorkspaceGate, useBusy } from "@/components/latentora/shared";
-import { deleteOpportunity, matchOpportunities, saveOpportunity, searchJobs } from "@/lib/latentora.functions";
+import { deleteOpportunity, matchOpportunities, saveOpportunity, searchJobs, suggestOpportunities } from "@/lib/latentora.functions";
 import { PROVIDERS, PROVIDER_NAME } from "@/lib/listings";
-import type { FitLevel, JobListing, ListingKind, ListingSearchResult, Opportunity, WorkspaceData } from "@/lib/types";
+import type { FitLevel, JobListing, ListingKind, ListingSearchResult, Opportunity, OpportunityPicks, WorkspaceData } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/explore")({
@@ -62,6 +62,23 @@ function Explore({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; 
   const search = useBusy();
   const match = useBusy();
   const [adding, setAdding] = useState<string | null>(null);
+  const [picks, setPicks] = useState<OpportunityPicks | null>(null);
+  const [picksBusy, setPicksBusy] = useState(false);
+  const mapVersion = ws.analysis ? `${ws.analysis.id}:${ws.analysis.created_at}:${ws.resume?.reviewed_at ?? ""}` : null;
+
+  // Pre-populate a handful of live picks from the capability map (stories and/or résumé).
+  useEffect(() => {
+    if (!mapVersion) return;
+    let alive = true;
+    setPicksBusy(true);
+    suggestOpportunities({ data: { id } })
+      .then((r) => alive && setPicks(r))
+      .catch(() => alive && setPicks({ picks: [], queries: [], source: null, created_at: null }))
+      .finally(() => alive && setPicksBusy(false));
+    return () => {
+      alive = false;
+    };
+  }, [id, mapVersion]);
 
   const doSearch = async (q = query) => {
     const r = await search.run(() => searchJobs({ data: { query: q } }), "The job feed didn't respond");
@@ -121,6 +138,18 @@ function Explore({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void; 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
       <div className="space-y-6">
+        {ws.analysis ? (
+          <PicksPanel picks={picks} busy={picksBusy} savedIds={savedIds} adding={adding} onAdd={add} />
+        ) : (
+          <Panel>
+            <h2 className="flex items-center gap-2 text-3xl">
+              <Sparkles className="size-5 text-gold" /> Picked for you
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Add your résumé or stories on <Link to="/discover" className="text-gold underline">Discover</Link> and a few live opportunities will be waiting here.
+            </p>
+          </Panel>
+        )}
         <Panel>
           <h2 className="flex items-center gap-2 text-3xl">
             <Search className="size-5 text-gold" /> Live listings
@@ -402,5 +431,71 @@ function SourceLine({ results }: { results: ListingSearchResult | null }) {
       })}
       . Free public feeds, refreshed every few hours. Apply on the original site.
     </p>
+  );
+}
+
+function PicksPanel({
+  picks,
+  busy,
+  savedIds,
+  adding,
+  onAdd,
+}: {
+  picks: OpportunityPicks | null;
+  busy: boolean;
+  savedIds: Set<string | null>;
+  adding: string | null;
+  onAdd: (l: JobListing) => void;
+}) {
+  return (
+    <Panel>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="flex items-center gap-2 text-3xl">
+          <Sparkles className="size-5 text-gold" /> Picked for you
+        </h2>
+        {picks?.source && <SourceBadge source={picks.source} model="muse-spark-1.3" />}
+      </div>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Live listings found from your capability map
+        {picks?.queries.length ? <> (searched: {picks.queries.join(", ")})</> : null}. Search below for more.
+      </p>
+      <div className="mt-4 space-y-3">
+        {busy && !picks && (
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" /> Muse Spark is picking a few opportunities for you…
+          </p>
+        )}
+        {picks && picks.picks.length === 0 && !busy && (
+          <p className="text-sm text-muted-foreground">No live listings matched your areas right now. Try a search below.</p>
+        )}
+        {picks?.picks.map(({ listing: l, why }) => (
+          <div key={l.external_id} className="rounded-2xl border border-gold/25 bg-gold/5 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{l.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {l.company} · {l.location}
+                </p>
+                {l.pay && <p className="mt-1 text-xs font-medium text-gold">{l.pay}</p>}
+              </div>
+              <Button size="sm" variant="outline" disabled={savedIds.has(l.external_id) || adding === l.external_id} onClick={() => onAdd(l)}>
+                {adding === l.external_id ? <Loader2 className="animate-spin" /> : <Plus />}
+                {savedIds.has(l.external_id) ? "On radar" : "Add"}
+              </Button>
+            </div>
+            {why && <p className="mt-2 text-sm text-foreground/85">{why}</p>}
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <Badge variant="outline">{PROVIDER_NAME[l.provider] ?? l.provider}</Badge>
+              <KindBadge kind={l.kind} />
+              {l.url && (
+                <a href={l.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-gold hover:underline">
+                  Original listing <ExternalLink className="size-3" />
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Panel>
   );
 }
