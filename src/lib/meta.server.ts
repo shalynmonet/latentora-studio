@@ -56,7 +56,7 @@ export async function sparkJSON<T>(opts: {
   schemaName: string;
   schema: Record<string, unknown>;
   /** Optional native file (e.g. PDF) sent inline as a Chat Completions `file` content block. */
-  file?: { filename: string; dataUrl: string };
+  file?: { filename: string; dataUrl: string } | undefined;
   timeoutMs?: number;
 }): Promise<T> {
   const userContent = opts.file

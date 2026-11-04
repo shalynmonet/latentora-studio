@@ -28,7 +28,7 @@ export function ResumeDiscovery({ ws, refresh, id }: { ws: WorkspaceData; refres
 
 /* ------------------------------ upload ------------------------------ */
 
-function ResumeUpload({ id, onDone, onCancel }: { id: string; onDone: () => void; onCancel?: () => void }) {
+function ResumeUpload({ id, onDone, onCancel }: { id: string; onDone: () => void; onCancel?: (() => void) | undefined }) {
   const [doc, setDoc] = useState<ReadResume | null>(null);
   const [consent, setConsent] = useState(false);
   const [reading, setReading] = useState(false);

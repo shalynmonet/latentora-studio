@@ -319,7 +319,7 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
   );
 }
 
-function ResumeTag({ origin }: { origin?: "stories" | "resume" | "both" }) {
+function ResumeTag({ origin }: { origin?: "stories" | "resume" | "both" | undefined }) {
   if (origin !== "resume" && origin !== "both") return null;
   return (
     <Badge variant="outline" className="ml-1 align-middle text-[10px]">

@@ -6,7 +6,7 @@ export interface ReadResume {
   kind: "pdf" | "docx";
   fileName: string;
   text: string;
-  pdfDataUrl?: string;
+  pdfDataUrl?: string | undefined;
 }
 
 const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
