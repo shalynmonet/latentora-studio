@@ -43,6 +43,13 @@
       "when": 1793793691907,
       "tag": "0005_resume_discovery",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793823334460,
+      "tag": "0006_workspace_owner",
+      "breakpoints": true
     }
   ]
 }
