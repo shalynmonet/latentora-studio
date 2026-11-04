@@ -60,7 +60,7 @@ async function gatherEvidence(
   const db = await admin();
   const [{ data: stories }, { data: analysis }, { data: exps }] = await Promise.all([
     db.from("stories").select("kind, title, description").eq("workspace_id", workspaceId).order("created_at").limit(12),
-    db.from("analyses").select("id, source, model, result, created_at").eq("workspace_id", workspaceId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    import("./analysis.server").then((m) => m.loadEffectiveAnalysis(db as never, workspaceId)).then((r) => ({ data: r.analysis })),
     db.from("experiments").select("*").eq("workspace_id", workspaceId),
   ]);
   const ev: EvidenceItem[] = [];

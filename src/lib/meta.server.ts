@@ -55,19 +55,28 @@ export async function sparkJSON<T>(opts: {
   user: string;
   schemaName: string;
   schema: Record<string, unknown>;
+  /** Optional native file (e.g. PDF) sent inline as a Chat Completions `file` content block. */
+  file?: { filename: string; dataUrl: string } | undefined;
+  timeoutMs?: number;
 }): Promise<T> {
+  const userContent = opts.file
+    ? [
+        { type: "text", text: opts.user },
+        { type: "file", file: { filename: opts.file.filename, file_data: opts.file.dataUrl } },
+      ]
+    : opts.user;
   const data = await post("/chat/completions", {
     model: META_MODELS.spark,
     reasoning_effort: "low",
     messages: [
       { role: "developer", content: opts.system },
-      { role: "user", content: opts.user },
+      { role: "user", content: userContent },
     ],
     response_format: {
       type: "json_schema",
       json_schema: { name: opts.schemaName, schema: opts.schema },
     },
-  });
+  }, opts.timeoutMs);
   const content = data?.choices?.[0]?.message?.content;
   if (typeof content !== "string") throw new MetaUnavailableError("Empty response from Muse Spark");
   return JSON.parse(content) as T;

@@ -27,6 +27,12 @@ async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   return supabaseAdmin;
 }
+async function effective() {
+  return import("./analysis.server");
+}
+async function loadEffectiveAnalysis(db: Awaited<ReturnType<typeof admin>>, id: string) {
+  return (await effective()).loadEffectiveAnalysis(db as never, id);
+}
 async function meta() {
   return import("./meta.server");
 }
@@ -120,7 +126,7 @@ export const getWorkspace = createServerFn({ method: "POST" })
     if (!ws) return null;
     const [stories, analyses, opps, boards, exps, chals] = await Promise.all([
       db.from("stories").select("id, kind, title, description, created_at").eq("workspace_id", ws.id).order("created_at"),
-      db.from("analyses").select("id, source, model, result, created_at").eq("workspace_id", ws.id).order("created_at", { ascending: false }).limit(1),
+      loadEffectiveAnalysis(db, ws.id),
       db.from("opportunities").select("*").eq("workspace_id", ws.id).order("created_at", { ascending: false }),
       db.from("vision_boards").select("*").eq("workspace_id", ws.id).order("created_at", { ascending: false }),
       db.from("experiments").select("*").eq("workspace_id", ws.id).order("created_at", { ascending: false }),
@@ -144,7 +150,8 @@ export const getWorkspace = createServerFn({ method: "POST" })
     return {
       workspace: ws,
       stories: (stories.data ?? []) as WorkspaceData["stories"],
-      analysis: (analyses.data?.[0] ?? null) as WorkspaceData["analysis"],
+      analysis: analyses.analysis,
+      resume: analyses.resume,
       opportunities: (opps.data ?? []).map((o) => ({
         id: o.id,
         source: o.source,
@@ -438,7 +445,7 @@ export const matchOpportunities = createServerFn({ method: "POST" })
     await assertWorkspace(data.id);
     const db = await admin();
     const [{ data: analysis }, { data: opps }] = await Promise.all([
-      db.from("analyses").select("result").eq("workspace_id", data.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      loadEffectiveAnalysis(db, data.id).then((r) => ({ data: r.analysis })),
       db.from("opportunities").select("id, title, company, description").eq("workspace_id", data.id).in("id", data.opportunityIds),
     ]);
     if (!analysis) throw new Error("Run Discover first so we know your capabilities");
@@ -505,7 +512,7 @@ export const generateBoard = createServerFn({ method: "POST" })
     const [{ data: opp }, { data: stories }, { data: analysis }] = await Promise.all([
       db.from("opportunities").select("id, title, company, match").eq("id", data.opportunityId).eq("workspace_id", data.id).maybeSingle(),
       db.from("stories").select("kind, title").eq("workspace_id", data.id),
-      db.from("analyses").select("result").eq("workspace_id", data.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      loadEffectiveAnalysis(db, data.id).then((r) => ({ data: r.analysis })),
     ]);
     if (!opp) throw new Error("Opportunity not found");
 
@@ -712,7 +719,7 @@ export const generateChallenge = createServerFn({ method: "POST" })
     const db = await admin();
     const [{ data: stories }, { data: analysis }] = await Promise.all([
       db.from("stories").select("kind, title").eq("workspace_id", data.id),
-      db.from("analyses").select("result").eq("workspace_id", data.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      loadEffectiveAnalysis(db, data.id).then((r) => ({ data: r.analysis })),
     ]);
     const result = analysis?.result as unknown as AnalysisResult | undefined;
     const cap = result?.capabilities.find((c) => c.name.toLowerCase() === data.capability.toLowerCase());
