@@ -12,6 +12,7 @@ import sampleBoard1 from "@/assets/sample-board-1.jpg";
 import sampleBoard2 from "@/assets/sample-board-2.jpg";
 import logoIcon from "@/assets/latentora_icon.png.asset.json";
 import logoName from "@/assets/latentora_name.png.asset.json";
+import { AccountButton } from "./account-button";
 import headerPattern from "@/assets/houndstooth_violet_small_header_band.jpg.asset.json";
 
 export const ASSET_IMAGES: Record<string, string> = {
@@ -78,6 +79,7 @@ export function SiteHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {data?.workspace.is_demo && <Badge variant="sample">Demo profile</Badge>}
+          <AccountButton />
           {status && (
             <Badge variant={status.metaConfigured ? "live" : "sample"} className="hidden sm:inline-flex">
               {status.metaConfigured ? "Meta API connected" : "Demo mode"}
