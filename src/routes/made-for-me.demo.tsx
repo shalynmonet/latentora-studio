@@ -11,6 +11,10 @@ import { DEMO_AMBITION, DEMO_PROFILES, type DemoProfile } from "@/lib/made-for-m
 import { demoDesign, demoDiscover } from "@/lib/made-for-me.functions";
 import { preferenceEvidence, type Blueprint, type Discovery, type Rationale } from "@/lib/made-for-me";
 import recorded from "@/lib/made-for-me-recorded.json";
+import recordedBuilds from "@/lib/made-for-me-recorded-builds.json";
+import { MuseBuildPanel } from "@/components/made-for-me/build-with-muse";
+import type { MuseBuild } from "@/lib/build-rules";
+import { demoBuild } from "@/lib/made-for-me.functions";
 
 export const Route = createFileRoute("/made-for-me/demo")({
   head: () => ({
@@ -140,6 +144,8 @@ function DemoPage() {
 }
 
 type Design = { rationale: Rationale; blueprint: Blueprint; live: boolean };
+type BuildState = { build: MuseBuild; recorded: boolean };
+const RECORDED_BUILDS = recordedBuilds as unknown as Partial<Record<"A" | "B", MuseBuild>>;
 
 function ProfileColumn({ profile, run }: { profile: DemoProfile; run: Run }) {
   const concepts = run.discovery.concepts;
@@ -149,6 +155,10 @@ function ProfileColumn({ profile, run }: { profile: DemoProfile; run: Run }) {
     first ? { [first.id]: { rationale: run.rationale, blueprint: run.blueprint, live: run.live } } : {},
   );
   const [busy, setBusy] = useState(false);
+  const [builds, setBuilds] = useState<Record<string, BuildState>>(() => {
+    const rec = RECORDED_BUILDS[profile.key];
+    return first && !run.live && rec ? { [first.id]: { build: rec, recorded: true } } : {};
+  });
   const concept = concepts[sel];
   const design = concept ? designs[concept.id] : undefined;
   const evidence = [...profile.evidence, ...preferenceEvidence(profile.preferences)];
@@ -230,6 +240,19 @@ function ProfileColumn({ profile, run }: { profile: DemoProfile; run: Run }) {
               </div>
             </div>
           </details>
+
+          <MuseBuildPanel
+            key={concept!.id}
+            compact
+            build={builds[concept!.id]?.build ?? null}
+            recorded={builds[concept!.id]?.recorded ?? false}
+            onBuild={async () => {
+              const { build_prompt: _p, personal_context: _c, preferences: _pr, source: _s, model: _m, ...bp } = design.blueprint;
+              const res = await demoBuild({ data: { profile: profile.key, blueprint: bp } });
+              setBuilds((b) => ({ ...b, [concept!.id]: { build: res, recorded: false } }));
+              toast.success(`${concept!.name} was built live by Muse Wonder.`);
+            }}
+          />
         </>
       ) : (
         <Panel>
