@@ -562,7 +562,10 @@ function Final({ workspaceId, inv, set, onRefine, onNew }: { workspaceId: string
   const [prompt, setPrompt] = useState(b.build_prompt);
   const dirty = prompt !== b.build_prompt;
   const saveBusy = useBusy();
-  const evidence = inv.discovery?.evidence ?? [];
+  const evidence = [
+    ...(inv.discovery?.evidence ?? []),
+    ...preferenceEvidence(inv.customization?.preferences ?? [], inv.customization?.custom_instructions ?? ""),
+  ];
   const persist = async (patch: { saved?: boolean; build_prompt?: string }) => {
     const res = await saveBusy.run(() => updateInvention({ data: { id: workspaceId, inventionId: inv.id, ...patch } }));
     if (res) set(res);
