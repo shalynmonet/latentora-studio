@@ -2,7 +2,7 @@ import { AlertTriangle, CheckCircle2, Download, FileCode2, Hammer, Loader2, Refr
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Panel, useBusy } from "@/components/latentora/shared";
+import { Panel } from "@/components/latentora/shared";
 import { buildWithMuse } from "@/lib/made-for-me.functions";
 import type { BuildCheck, MuseBuild } from "@/lib/build-rules";
 import type { Invention } from "@/lib/made-for-me";
@@ -90,12 +90,37 @@ function CheckRow({ c }: { c: BuildCheck }) {
 }
 
 export function BuildWithMuse({ workspaceId, inv, set }: { workspaceId: string; inv: Invention; set: (i: Invention) => void }) {
-  const b = inv.build;
-  const { busy, run } = useBusy();
+  const stale = Boolean(inv.build && inv.blueprint && inv.build.generated_at < inv.blueprint.generated_at);
+  return (
+    <MuseBuildPanel
+      build={inv.build}
+      stale={stale}
+      onBuild={async () => {
+        const res = await buildWithMuse({ data: { id: workspaceId, inventionId: inv.id } });
+        set(res);
+      }}
+    />
+  );
+}
+
+/** Reusable Build with Muse panel. `recorded` = a replayed earlier build, labelled not live. */
+export function MuseBuildPanel({
+  build: b,
+  onBuild,
+  stale = false,
+  recorded = false,
+  compact = false,
+}: {
+  build: MuseBuild | null;
+  onBuild: () => Promise<void>;
+  stale?: boolean;
+  recorded?: boolean;
+  compact?: boolean;
+}) {
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [zip, setZip] = useState<Blob | null>(null);
   const [open, setOpen] = useState<string | null>(null);
-  const stale = b && inv.blueprint && b.generated_at < inv.blueprint.generated_at;
 
   useEffect(() => {
     setZip(null);
@@ -104,17 +129,14 @@ export function BuildWithMuse({ workspaceId, inv, set }: { workspaceId: string; 
 
   const go = async () => {
     setError(null);
-    let failed: string | null = null;
-    const res = await run(async () => {
-      try {
-        return await buildWithMuse({ data: { id: workspaceId, inventionId: inv.id } });
-      } catch (e) {
-        failed = e instanceof Error ? e.message : "The build failed.";
-        throw e;
-      }
-    });
-    if (res) set(res);
-    else setError(failed ?? "The build failed. Please try again.");
+    setBusy(true);
+    try {
+      await onBuild();
+    } catch (e) {
+      setError(e instanceof Error && e.message ? e.message : "The build failed. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -122,14 +144,14 @@ export function BuildWithMuse({ workspaceId, inv, set }: { workspaceId: string; 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="max-w-2xl">
           <p className="eyebrow">Build with Muse</p>
-          <h3 className="mt-2 text-3xl md:text-4xl">Turn this blueprint into a real app</h3>
+          <h3 className={cn("mt-2", compact ? "text-3xl" : "text-3xl md:text-4xl")}>Turn this blueprint into a real app</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Muse Wonder (<code>muse-wonder-1.0</code>, Meta's coding model) writes the complete source code for a small, self-contained web app from your
-            approved blueprint — only the details you approved are sent. You download it as a .zip and open it on your own device. Latentora checks the
-            files but never runs them.
+            Muse Wonder (<code>muse-wonder-1.0</code>, Meta's coding model) writes the complete source code for a small, self-contained web app from the
+            approved blueprint — only approved details are sent. Download it as a .zip and open it on your own device. Latentora checks the files but
+            never runs them.
           </p>
         </div>
-        {b && <Badge variant="live">Live · {b.model}</Badge>}
+        {b && (recorded ? <Badge variant="sample">Recorded build · not live</Badge> : <Badge variant="live">Live · {b.model}</Badge>)}
       </div>
 
       {!b && !busy && (
@@ -151,7 +173,7 @@ export function BuildWithMuse({ workspaceId, inv, set }: { workspaceId: string; 
         <div className="mt-6 space-y-6">
           {stale && (
             <p className="rounded-2xl border border-warning/40 bg-warning/10 p-3 text-sm">
-              Your blueprint changed after this app was built. Rebuild to match it.
+              The blueprint changed after this app was built. Rebuild to match it.
             </p>
           )}
           <div className="flex flex-wrap gap-2">
@@ -159,10 +181,10 @@ export function BuildWithMuse({ workspaceId, inv, set }: { workspaceId: string; 
               {zip ? <Download /> : <Loader2 className="animate-spin" />} Download project (.zip)
             </Button>
             <Button variant="outline" onClick={go}>
-              <RefreshCw /> Rebuild
+              <RefreshCw /> {recorded ? "Build it live now" : "Rebuild"}
             </Button>
           </div>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className={cn("grid gap-6", !compact && "md:grid-cols-2")}>
             <div>
               <h4 className="text-xl">Set up in one minute</h4>
               <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
