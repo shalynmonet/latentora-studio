@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PageIntro, Panel, SourceBadge, WorkspaceGate, WorkspaceSwitcher, useBusy } from "@/components/latentora/shared";
+import { ResumeDiscovery } from "@/components/latentora/resume-discovery";
 import { addStory, analyzeStories, deleteStory } from "@/lib/latentora.functions";
 import type { StoryKind, WorkspaceData } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -85,6 +86,8 @@ function Discover({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void;
   const enough = ws.stories.length >= 3;
 
   return (
+    <div className="space-y-10">
+    <ResumeDiscovery ws={ws} refresh={refresh} id={id} />
     <div className="grid gap-8 lg:grid-cols-[1fr_1.3fr]">
       <div className="space-y-6">
         <Panel>
@@ -173,6 +176,7 @@ function Discover({ ws, refresh, id }: { ws: WorkspaceData; refresh: () => void;
 
       <AnalysisView ws={ws} busy={analyze.busy} />
     </div>
+    </div>
   );
 }
 
@@ -206,7 +210,9 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
           <p className="eyebrow">Reading</p>
           <SourceBadge source={a.source} model={a.model} />
         </div>
-        <p className="mt-3 font-display text-2xl leading-snug">{r.summary}</p>
+        <p className="mt-3 font-display text-2xl leading-snug">
+          {r.summary || "These capabilities come from the résumé findings you confirmed. Add stories and run the analysis to see the fuller picture."}
+        </p>
       </Panel>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -217,7 +223,9 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
           <ul className="space-y-4">
             {demonstrated.map((c) => (
               <li key={c.name}>
-                <p className="font-display text-xl">{c.name}</p>
+                <p className="font-display text-xl">
+                  {c.name} <ResumeTag origin={c.origin} />
+                </p>
                 <ul className="mt-1 space-y-1">
                   {c.evidence.map((e, i) => (
                     <li key={i} className="text-xs text-muted-foreground">
@@ -237,7 +245,9 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
           <ul className="space-y-4">
             {hypothesized.map((c) => (
               <li key={c.name}>
-                <p className="font-display text-xl">{c.name}</p>
+                <p className="font-display text-xl">
+                  {c.name} <ResumeTag origin={c.origin} />
+                </p>
                 <p className="text-xs text-muted-foreground">{c.rationale}</p>
               </li>
             ))}
@@ -306,5 +316,14 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
         </Button>
       </div>
     </div>
+  );
+}
+
+function ResumeTag({ origin }: { origin?: "stories" | "resume" | "both" }) {
+  if (origin !== "resume" && origin !== "both") return null;
+  return (
+    <Badge variant="outline" className="ml-1 align-middle text-[10px]">
+      {origin === "both" ? "Stories + résumé" : "From your résumé"}
+    </Badge>
   );
 }
