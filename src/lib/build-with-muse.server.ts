@@ -31,6 +31,7 @@ const SYSTEM = [
   "Implement every MUST feature fully, and SHOULD features where reasonable. No placeholders, no TODOs, no lorem ipsum. Seed with no fake personal data — start empty with a friendly first-use hint.",
   "Implement every accessibility requirement listed; they are authoritative. Use semantic HTML, labelled controls, visible :focus-visible styles, and an aria-live status region.",
   "README.md: what the tool is for, how to run it (open index.html, or `npx serve .`), how to use it, where data is stored and how to delete it, and a checklist of the acceptance tests to try by hand.",
+  "If you show/hide screens with the hidden attribute, include `[hidden]{display:none !important}` in styles.css so CSS display rules can't override it; only the current step should be visible.",
   "Keep the code clear and reasonably compact (aim under 900 lines total).",
 ].join(" ");
 
