@@ -225,7 +225,7 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
             {demonstrated.map((c) => (
               <li key={c.name}>
                 <div className="font-display text-xl">
-                  {c.name} <ResumeTag origin={c.origin} />
+                  {c.name} <ResumeTag origin={c.origin} hasStories={ws.stories.length > 0} />
                 </div>
                 <ul className="mt-1 space-y-1">
                   {c.evidence.map((e, i) => (
@@ -247,7 +247,7 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
             {hypothesized.map((c) => (
               <li key={c.name}>
                 <div className="font-display text-xl">
-                  {c.name} <ResumeTag origin={c.origin} />
+                  {c.name} <ResumeTag origin={c.origin} hasStories={ws.stories.length > 0} />
                 </div>
                 <p className="text-xs text-muted-foreground">{c.rationale}</p>
               </li>
@@ -320,11 +320,11 @@ function AnalysisView({ ws, busy }: { ws: WorkspaceData; busy: boolean }) {
   );
 }
 
-function ResumeTag({ origin }: { origin?: "stories" | "resume" | "both" | undefined }) {
+function ResumeTag({ origin, hasStories }: { origin?: "stories" | "resume" | "both" | undefined; hasStories: boolean }) {
   if (origin !== "resume" && origin !== "both") return null;
   return (
     <Badge variant="outline" className="ml-1 align-middle text-[10px]">
-      {origin === "both" ? "Stories + résumé" : "From your résumé"}
+      {origin === "both" && hasStories ? "Stories + résumé" : "From your résumé"}
     </Badge>
   );
 }
