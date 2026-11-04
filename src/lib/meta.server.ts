@@ -6,7 +6,11 @@ export const META_MODELS = {
   spark: "muse-spark-1.3",
   image: "muse-image-1.0",
   sam: "sam-3.1",
+  /** Meta's coding model on Model API (verified in this account's /v1/models list). */
+  code: "muse-wonder-1.0",
 } as const;
+
+export const CHAT_ENDPOINT = `${BASE}/chat/completions`;
 
 export class MetaUnavailableError extends Error {}
 
@@ -66,6 +70,27 @@ export async function sparkJSON<T>(opts: {
   });
   const content = data?.choices?.[0]?.message?.content;
   if (typeof content !== "string") throw new MetaUnavailableError("Empty response from Muse Spark");
+  return JSON.parse(content) as T;
+}
+
+/** Muse Wonder code generation via Chat Completions with constrained JSON output. */
+export async function codeJSON<T>(opts: { system: string; user: string; schemaName: string; schema: Record<string, unknown> }): Promise<T> {
+  const data = await post(
+    "/chat/completions",
+    {
+      model: META_MODELS.code,
+      reasoning_effort: "low",
+      messages: [
+        { role: "developer", content: opts.system },
+        { role: "user", content: opts.user },
+      ],
+      response_format: { type: "json_schema", json_schema: { name: opts.schemaName, schema: opts.schema } },
+    },
+    280_000,
+  );
+  const content = data?.choices?.[0]?.message?.content;
+  if (typeof content !== "string") throw new MetaUnavailableError("Empty response from Muse Wonder");
+  if (data?.choices?.[0]?.finish_reason === "length") throw new MetaUnavailableError("Muse Wonder ran out of room");
   return JSON.parse(content) as T;
 }
 
