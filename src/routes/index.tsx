@@ -78,6 +78,26 @@ function Index() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-5 pt-16">
+        <Link
+          to="/made-for-me"
+          className="glass group relative block overflow-hidden rounded-[2rem] p-8 transition-shadow hover:shadow-glow md:p-12"
+        >
+          <div className="pointer-events-none absolute -right-16 -top-16 -z-10 size-72 rounded-full bg-gold/15 blur-3xl" />
+          <p className="eyebrow">New · Made for Me</p>
+          <h2 className="mt-3 max-w-3xl text-4xl leading-tight md:text-6xl">
+            What if the tool you need <em className="text-gold-gradient">doesn't exist yet?</em>
+          </h2>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            Latentora discovers what could make your life easier, your ambitions more achievable, and your possibilities bigger—then
+            designs it specifically for you, with a ready-to-paste build prompt.
+          </p>
+          <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold-gradient px-5 py-2 text-sm font-medium text-primary-foreground">
+            Discover What I Need <ArrowRight className="size-4" />
+          </span>
+        </Link>
+      </section>
+
       <section className="mx-auto max-w-7xl px-5 py-20">
         <p className="eyebrow">The journey</p>
         <h2 className="mt-3 text-4xl md:text-5xl">Discover → Explore → Visualize → Experiment → Evolve</h2>

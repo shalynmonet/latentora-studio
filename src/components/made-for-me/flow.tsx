@@ -34,6 +34,7 @@ import {
   submitInventionFeedback,
   updateInvention,
 } from "@/lib/made-for-me.functions";
+import { preferenceEvidence } from "@/lib/made-for-me";
 import type { ApprovedDetail, Builder, Customization, Invention, InventionFeedback, Pathway, PreferenceKey, ToolConcept } from "@/lib/made-for-me";
 import { cn } from "@/lib/utils";
 
@@ -494,7 +495,7 @@ function RationaleStep({ workspaceId, inv, onBack, onDone }: { workspaceId: stri
   const evidence = useMemo(
     () => [
       ...(inv.discovery?.evidence ?? []),
-      ...(inv.customization?.preferences ?? []).map((p) => ({ id: `p:${p}`, kind: "preference" as const, label: "Chosen preference", text: p.replace(/_/g, " ") })),
+      ...preferenceEvidence(inv.customization?.preferences ?? [], inv.customization?.custom_instructions ?? ""),
     ],
     [inv],
   );

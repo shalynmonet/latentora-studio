@@ -61,6 +61,13 @@ export function SiteHeader() {
               {s.label}
             </Link>
           ))}
+          <Link
+            to="/made-for-me"
+            className="ml-2 rounded-full border border-gold/40 px-3 py-1.5 text-sm text-gold transition-colors hover:bg-gold/10"
+            activeProps={{ className: "bg-gold/15" }}
+          >
+            Made for Me
+          </Link>
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {data?.workspace.is_demo && <Badge variant="sample">Demo profile</Badge>}
@@ -82,6 +89,13 @@ export function SiteHeader() {
             {s.label}
           </Link>
         ))}
+        <Link
+          to="/made-for-me"
+          className="shrink-0 rounded-full border border-gold/40 px-3 py-1 text-xs text-gold"
+          activeProps={{ className: "bg-gold/15" }}
+        >
+          Made for Me
+        </Link>
       </nav>
     </header>
   );
