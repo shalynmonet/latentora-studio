@@ -27,6 +27,8 @@ export default defineConfig({
         "sonner",
         "zod",
         "@tanstack/react-query",
+        "jszip",
+        "acorn",
       ],
     },
   },
