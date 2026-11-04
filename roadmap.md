@@ -1,6 +1,4 @@
-# Roadmap — Made for Me
+# Roadmap
 
-- [x] Phase 1: entry, discovery, 3 concepts, select/reject/refresh, customization, copy-ready blueprint
-- [x] Phase 2: evidence-linked rationale, accessibility-driven blueprint, judge demo (recorded + live)
-- [x] Phase 3: My Possibilities, blueprint download, feedback + revisions
-- [x] Validation
+- [x] Made for Me (phases 1–3, validation)
+- [ ] Résumé-powered discovery on Discover: upload (PDF/DOCX), consent, Muse Spark extraction, Beyond the Résumé reveal, confirm/edit/reject, merge into Atlas + downstream features, deletion, tests
