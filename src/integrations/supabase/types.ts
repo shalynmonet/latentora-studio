@@ -449,18 +449,21 @@ export type Database = {
           display_name: string
           id: string
           is_demo: boolean
+          owner_id: string | null
         }
         Insert: {
           created_at?: string
           display_name?: string
           id?: string
           is_demo?: boolean
+          owner_id?: string | null
         }
         Update: {
           created_at?: string
           display_name?: string
           id?: string
           is_demo?: boolean
+          owner_id?: string | null
         }
         Relationships: []
       }
