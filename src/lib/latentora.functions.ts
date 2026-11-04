@@ -4,7 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { DEMO_ANALYSIS, DEMO_LISTINGS, DEMO_MATCHES, DEMO_PROFILE_NAME, DEMO_STORIES } from "./demo-data";
 import { heuristicAnalysis, heuristicMatch } from "./heuristics";
-import { PROVIDERS, interleave } from "./listings";
+import { PICKS_COUNT, PROVIDERS, interleave, pickQueries } from "./listings";
 import { describeSegmentation, parseSamBoxes } from "./sam-parse";
 import { scorePaperChallenge } from "./scoring";
 import { CHALLENGE_LIMITS, sanitizeSpec, scoreCustomChallenge } from "./challenge-rules";
@@ -15,6 +15,7 @@ import type {
   JobListing,
   ListingSearchResult,
   OpportunityMatch,
+  OpportunityPicks,
   ResultSource,
   SegmentationEvidence,
   WorkspaceData,
