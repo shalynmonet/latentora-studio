@@ -102,6 +102,14 @@ export interface ListingSearchResult {
   error: string | null;
 }
 
+/** Explore's pre-populated picks; `source` says whether Muse Spark or the offline keyword fallback chose them. */
+export interface OpportunityPicks {
+  picks: { listing: JobListing; why: string }[];
+  queries: string[];
+  source: ResultSource | null;
+  created_at: string | null;
+}
+
 export interface VisionBoard {
   id: string;
   opportunity_id: string | null;
