@@ -14,7 +14,7 @@ import recorded from "@/lib/made-for-me-recorded.json";
 export const Route = createFileRoute("/made-for-me/demo")({
   head: () => ({
     meta: [
-      { title: "Same Ambition. Different Humans. Different Tools. · Latentora" },
+      { title: "Same Ambition. Different Humans. Different Tools. (Demo) · Latentora" },
       { name: "description", content: "Two fictional people share one ambition. Latentora's personalisation pipeline designs them two different tools." },
       { property: "og:title", content: "Same Ambition. Different Humans. Different Tools." },
       { property: "og:description", content: "See how Made for Me turns different evidence and preferences into different personal inventions." },
@@ -82,7 +82,8 @@ function DemoPage() {
       <header className="mt-6 mb-10">
         <p className="eyebrow">Judge demo · two fictional people</p>
         <h1 className="mt-4 max-w-4xl text-5xl leading-[0.98] md:text-7xl">
-          Same Ambition. <em className="text-gold-gradient">Different Humans.</em> Different Tools.
+          Same Ambition. <em className="text-gold-gradient">Different Humans.</em> Different Tools.{" "}
+          <span className="align-middle text-2xl text-muted-foreground md:text-3xl">(Demo)</span>
         </h1>
         <p className="mt-6 font-display text-3xl text-pearl">“{DEMO_AMBITION}”</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">

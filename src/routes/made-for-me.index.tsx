@@ -46,7 +46,7 @@ function MadeForMePage() {
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link to="/made-for-me/demo">
-                <Users /> Same Ambition. Different Humans.
+                <Users /> Same Ambition. Different Humans. (Demo)
               </Link>
             </Button>
           </div>

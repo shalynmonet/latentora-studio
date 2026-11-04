@@ -12,6 +12,7 @@ import sampleBoard1 from "@/assets/sample-board-1.jpg";
 import sampleBoard2 from "@/assets/sample-board-2.jpg";
 import logoIcon from "@/assets/latentora_icon.png.asset.json";
 import logoName from "@/assets/latentora_name.png.asset.json";
+import headerPattern from "@/assets/houndstooth_header_strip.jpg.asset.json";
 
 export const ASSET_IMAGES: Record<string, string> = {
   "asset:sample-board-1": sampleBoard1,
@@ -43,7 +44,13 @@ export function SiteHeader() {
   const { data: status } = useQuery(statusQuery);
   const { data } = useWorkspace();
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/60 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 isolate overflow-hidden border-b border-border/60 bg-background/60 backdrop-blur-xl">
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-repeat-x"
+        style={{ backgroundImage: `url(${headerPattern.url})`, backgroundSize: "auto 160px", backgroundPosition: "center top" }}
+      />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-background/55" />
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-5 py-3">
         <Link to="/" className="flex shrink-0 items-center gap-2.5" aria-label="Latentora home">
           <img src={logoIcon.url} alt="" width={36} height={36} className="size-9" />
@@ -66,7 +73,7 @@ export function SiteHeader() {
             className="ml-2 rounded-full border border-gold/40 px-3 py-1.5 text-sm text-gold transition-colors hover:bg-gold/10"
             activeProps={{ className: "bg-gold/15" }}
           >
-            Made for Me
+            Invent
           </Link>
         </nav>
         <div className="ml-auto flex items-center gap-2">
@@ -94,7 +101,7 @@ export function SiteHeader() {
           className="shrink-0 rounded-full border border-gold/40 px-3 py-1 text-xs text-gold"
           activeProps={{ className: "bg-gold/15" }}
         >
-          Made for Me
+          Invent
         </Link>
       </nav>
     </header>
