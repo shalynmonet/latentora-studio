@@ -144,6 +144,86 @@ export type Database = {
           },
         ]
       }
+      inventions: {
+        Row: {
+          ambition: string
+          answers: Json
+          approved_details: Json | null
+          blueprint: Json | null
+          created_at: string
+          customization: Json | null
+          discovery: Json | null
+          feedback: Json | null
+          friction: string
+          id: string
+          model: string | null
+          pathway: string
+          rationale: Json | null
+          rejected: Json
+          revision: Json | null
+          saved: boolean
+          selected: Json | null
+          source: string
+          updated_at: string
+          working_style: string
+          workspace_id: string
+        }
+        Insert: {
+          ambition?: string
+          answers?: Json
+          approved_details?: Json | null
+          blueprint?: Json | null
+          created_at?: string
+          customization?: Json | null
+          discovery?: Json | null
+          feedback?: Json | null
+          friction?: string
+          id?: string
+          model?: string | null
+          pathway: string
+          rationale?: Json | null
+          rejected?: Json
+          revision?: Json | null
+          saved?: boolean
+          selected?: Json | null
+          source?: string
+          updated_at?: string
+          working_style?: string
+          workspace_id: string
+        }
+        Update: {
+          ambition?: string
+          answers?: Json
+          approved_details?: Json | null
+          blueprint?: Json | null
+          created_at?: string
+          customization?: Json | null
+          discovery?: Json | null
+          feedback?: Json | null
+          friction?: string
+          id?: string
+          model?: string | null
+          pathway?: string
+          rationale?: Json | null
+          rejected?: Json
+          revision?: Json | null
+          saved?: boolean
+          selected?: Json | null
+          source?: string
+          updated_at?: string
+          working_style?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_cache: {
         Row: {
           fetched_at: string
