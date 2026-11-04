@@ -65,3 +65,30 @@ export function interleave(groups: JobListing[][], limit = 40): JobListing[] {
   }
   return out;
 }
+
+/** How many listings Explore pre-populates from the capability map. */
+export const PICKS_COUNT = 5;
+
+/**
+ * Search terms for Explore's pre-populated picks, derived only from the person's own capability map:
+ * the contexts their transferable skills point to first, then their strongest capability names.
+ */
+export function pickQueries(
+  analysis: { capabilities: { name: string; status: string }[]; transferable_skills: { to_contexts: string[] }[] } | null | undefined,
+  max = 3,
+): string[] {
+  if (!analysis) return [];
+  const short = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, " ").split(/\s+/).filter(Boolean).slice(0, 2).join(" ");
+  const ordered = [
+    ...analysis.transferable_skills.flatMap((t) => t.to_contexts),
+    ...analysis.capabilities.filter((c) => c.status === "demonstrated").map((c) => c.name),
+    ...analysis.capabilities.map((c) => c.name),
+  ];
+  const out: string[] = [];
+  for (const o of ordered) {
+    const q = short(o);
+    if (q.length >= 3 && !out.includes(q)) out.push(q);
+    if (out.length >= max) break;
+  }
+  return out;
+}
