@@ -321,19 +321,22 @@ function BeyondTheResume({ resume, refresh, id, onReplace }: { resume: ResumeRec
             <Check /> Confirm all directly supported
           </Button>
         </div>
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="space-y-5">
           {GROUPS.map((g) => {
             const items = r.findings.filter((f) => f.classification === g.key);
             return (
               <Panel key={g.key} className="p-5">
-                <Badge variant={g.badge}>{g.title}</Badge>
-                <p className="mt-2 text-xs text-muted-foreground">{g.note}</p>
-                <ul className="mt-4 space-y-3">
-                  {items.map((f) => (
-                    <FindingCard key={f.id} f={f} decision={review[f.id]} passages={passages} onChange={(d) => set(f.id, d)} />
-                  ))}
-                  {items.length === 0 && <li className="text-sm text-muted-foreground">None.</li>}
-                </ul>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge variant={g.badge}>{g.title}</Badge>
+                  <p className="text-xs text-muted-foreground">{items.length ? g.note : "None in this résumé."}</p>
+                </div>
+                {items.length > 0 && (
+                  <ul className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    {items.map((f) => (
+                      <FindingCard key={f.id} f={f} decision={review[f.id]} passages={passages} onChange={(d) => set(f.id, d)} />
+                    ))}
+                  </ul>
+                )}
               </Panel>
             );
           })}

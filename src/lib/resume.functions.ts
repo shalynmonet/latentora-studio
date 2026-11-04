@@ -108,6 +108,7 @@ const SYSTEM = [
   "   'direct' = a cited passage directly shows the person doing it;",
   "   'hypothesis' = a reasonable inference from cited passages that the person should confirm;",
   "   'insufficient' = plausible but the résumé doesn't give enough evidence (cite nothing or the nearest passage).",
+  "   Aim for an honest mix: usually 3-6 'direct'; 2-4 'hypothesis' for broader transferable capabilities the passages suggest but don't prove (what the person could likely do in a different context); and 'insufficient' for skills the résumé only lists without showing them in action.",
   "   explanation: one or two plain sentences on what in the passages points to this.",
   "4. beyond: a warm, specific headline and short insight about strengths the job titles alone would overlook, plus up to 3 connections between finding names (use the names exactly).",
   "NEVER: invent employers, dates, numbers or achievements; give numeric scores or confidence percentages; infer or mention age, gender, race, ethnicity, nationality, religion, disability, health, sexual orientation, marital or family status, political views or any other protected characteristic; include names, contact details or addresses in passages.",
