@@ -140,6 +140,7 @@ export interface Invention {
   blueprint: Blueprint | null;
   feedback: InventionFeedback | null;
   revision: Revision | null;
+  build: import("./build-rules").MuseBuild | null;
   saved: boolean;
   created_at: string;
   updated_at: string;
