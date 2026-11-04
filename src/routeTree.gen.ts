@@ -15,6 +15,8 @@ import { Route as EvolveRouteImport } from './routes/evolve'
 import { Route as ExperimentRouteImport } from './routes/experiment'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as VisualizeRouteImport } from './routes/visualize'
+import { Route as MadeForMeIndexRouteImport } from './routes/made-for-me.index'
+import { Route as MadeForMeDemoRouteImport } from './routes/made-for-me.demo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +48,16 @@ const VisualizeRoute = VisualizeRouteImport.update({
   path: '/visualize',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MadeForMeIndexRoute = MadeForMeIndexRouteImport.update({
+  id: '/made-for-me/',
+  path: '/made-for-me/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MadeForMeDemoRoute = MadeForMeDemoRouteImport.update({
+  id: '/made-for-me/demo',
+  path: '/made-for-me/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +66,8 @@ export interface FileRoutesByFullPath {
   '/experiment': typeof ExperimentRoute
   '/explore': typeof ExploreRoute
   '/visualize': typeof VisualizeRoute
+  '/made-for-me/demo': typeof MadeForMeDemoRoute
+  '/made-for-me/': typeof MadeForMeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +76,8 @@ export interface FileRoutesByTo {
   '/experiment': typeof ExperimentRoute
   '/explore': typeof ExploreRoute
   '/visualize': typeof VisualizeRoute
+  '/made-for-me/demo': typeof MadeForMeDemoRoute
+  '/made-for-me': typeof MadeForMeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,13 +87,30 @@ export interface FileRoutesById {
   '/experiment': typeof ExperimentRoute
   '/explore': typeof ExploreRoute
   '/visualize': typeof VisualizeRoute
+  '/made-for-me/demo': typeof MadeForMeDemoRoute
+  '/made-for-me/': typeof MadeForMeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/discover' | '/evolve' | '/experiment' | '/explore' | '/visualize'
+    | '/'
+    | '/discover'
+    | '/evolve'
+    | '/experiment'
+    | '/explore'
+    | '/visualize'
+    | '/made-for-me/demo'
+    | '/made-for-me/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/discover' | '/evolve' | '/experiment' | '/explore' | '/visualize'
+  to:
+    | '/'
+    | '/discover'
+    | '/evolve'
+    | '/experiment'
+    | '/explore'
+    | '/visualize'
+    | '/made-for-me/demo'
+    | '/made-for-me'
   id:
     | '__root__'
     | '/'
@@ -86,6 +119,8 @@ export interface FileRouteTypes {
     | '/experiment'
     | '/explore'
     | '/visualize'
+    | '/made-for-me/demo'
+    | '/made-for-me/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,6 +130,8 @@ export interface RootRouteChildren {
   ExperimentRoute: typeof ExperimentRoute
   ExploreRoute: typeof ExploreRoute
   VisualizeRoute: typeof VisualizeRoute
+  MadeForMeDemoRoute: typeof MadeForMeDemoRoute
+  MadeForMeIndexRoute: typeof MadeForMeIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -141,6 +178,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VisualizeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/made-for-me/': {
+      id: '/made-for-me/'
+      path: '/made-for-me'
+      fullPath: '/made-for-me/'
+      preLoaderRoute: typeof MadeForMeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/made-for-me/demo': {
+      id: '/made-for-me/demo'
+      path: '/made-for-me/demo'
+      fullPath: '/made-for-me/demo'
+      preLoaderRoute: typeof MadeForMeDemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -151,6 +202,8 @@ const rootRouteChildren: RootRouteChildren = {
   ExperimentRoute: ExperimentRoute,
   ExploreRoute: ExploreRoute,
   VisualizeRoute: VisualizeRoute,
+  MadeForMeDemoRoute: MadeForMeDemoRoute,
+  MadeForMeIndexRoute: MadeForMeIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

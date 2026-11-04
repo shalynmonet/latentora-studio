@@ -1,0 +1,748 @@
+{
+  "recorded_at": "2026-11-04T02:40:29.879Z",
+  "profiles": {
+    "A": {
+      "discovery": {
+        "follow_up_questions": [],
+        "inferred_needs": [
+          {
+            "id": "n1",
+            "need": "To work spatially and see all creative work at once so order and story can emerge by moving things.",
+            "evidence_ids": [
+              "style",
+              "s1",
+              "c1"
+            ],
+            "basis": "hypothesis"
+          },
+          {
+            "id": "n2",
+            "need": "To keep half-finished pieces visible and linked across ceramics, photography, and illustration so they can feed each other.",
+            "evidence_ids": [
+              "s2",
+              "s3",
+              "c2"
+            ],
+            "basis": "hypothesis"
+          },
+          {
+            "id": "n3",
+            "need": "To move toward finishing without rigid timelines or pressure that causes projects to be dropped.",
+            "evidence_ids": [
+              "goal",
+              "style"
+            ],
+            "basis": "stated"
+          }
+        ],
+        "concepts": [
+          {
+            "id": "r1-1",
+            "name": "The Whole Wall",
+            "what_it_does": "A single drag-around canvas where each project is a card with an image and one-line note. You can zoom out to see everything, drag cards into clusters, and save arrangements as different story orders.",
+            "why_for_you": "You said you like to see everything at once and move ideas around, and you finished your 24-page zine by pinning and rearranging sketches until the story worked.",
+            "evidence_ids": [
+              "style",
+              "s1",
+              "c1"
+            ],
+            "what_becomes_possible": "You can see ceramics, photos, and sketches together and shape a finish by rearranging, not by forcing a timeline.",
+            "differs_from_generic": "Unlike a generic kanban or to-do list, this has no columns or due dates — it copies your wall-pinning zine method where order emerges from moving things.",
+            "assumptions": [
+              "You are happy to photograph or scan physical work to pin it up digitally.",
+              "You work best with free-form dragging rather than auto-layout."
+            ]
+          },
+          {
+            "id": "r1-2",
+            "name": "Idea Kinship Table",
+            "what_it_does": "Holds short cards for each unfinished piece and shows two at a time side by side with a simple link note. You keep the pairs that spark something and dismiss the rest, building a small web of related work.",
+            "why_for_you": "You juggle ceramics, photography, and illustration and often start something new when two ideas connect, but linear apps hide those links so you lose half-finished work.",
+            "evidence_ids": [
+              "s2",
+              "s3",
+              "c2"
+            ],
+            "what_becomes_possible": "Forgotten pieces resurface as pairs that want to become one finished thing, instead of sitting isolated in separate folders.",
+            "differs_from_generic": "Unlike a generic project tracker that keeps projects separate, this only exists to show how half-finished pieces could feed each other across mediums.",
+            "assumptions": [
+              "You enjoy prompts that suggest combining old ideas into something new.",
+              "You have photos or short notes for most half-finished pieces."
+            ]
+          },
+          {
+            "id": "r1-3",
+            "name": "Ripening Shelf",
+            "what_it_does": "A shelf with three soft zones for resting, ripening, and ready-to-finish pieces. You move pieces between zones, add a tiny next touch like trim edges or pick three photos, and mark small closes with a photo of the finished state.",
+            "why_for_you": "You want to finish more creative projects, but rigid timelines make you drop them, and hidden half-finished pieces slip away.",
+            "evidence_ids": [
+              "goal",
+              "style",
+              "s3"
+            ],
+            "what_becomes_possible": "More creative projects reach a handmade sense of done without pressure, and nothing disappears just because it paused.",
+            "differs_from_generic": "Unlike generic habit or task apps with rigid timelines that make you drop projects, this has no deadlines — only resting, ripening, and ready states you move by hand.",
+            "assumptions": [
+              "Gentle nudges work better for you than streaks or deadlines.",
+              "Finishing for you can mean calling a version done and keeping the leftover as seed for later."
+            ]
+          }
+        ],
+        "model": "muse-spark-1.3",
+        "evidence": [
+          {
+            "id": "goal",
+            "kind": "stated",
+            "label": "Ambition",
+            "text": "I want to finish more creative projects."
+          },
+          {
+            "id": "style",
+            "kind": "stated",
+            "label": "How they like to work",
+            "text": "I like to see everything at once and move ideas around. Rigid timelines make me drop projects."
+          },
+          {
+            "id": "s1",
+            "kind": "stated",
+            "label": "Project",
+            "text": "Illustrated a 24-page zine by pinning sketches to a wall and rearranging them until the story worked."
+          },
+          {
+            "id": "s2",
+            "kind": "stated",
+            "label": "Experience",
+            "text": "Juggles ceramics, photography and illustration side projects; often starts a new one when two ideas connect."
+          },
+          {
+            "id": "s3",
+            "kind": "stated",
+            "label": "Frustration",
+            "text": "Linear task apps hide how my projects relate, so I forget half-finished pieces that could feed each other."
+          },
+          {
+            "id": "c1",
+            "kind": "demonstrated",
+            "label": "Capability (demonstrated)",
+            "text": "Visual storytelling — sequenced a full zine spatially."
+          },
+          {
+            "id": "c2",
+            "kind": "hypothesis",
+            "label": "Capability (hypothesis)",
+            "text": "Cross-disciplinary synthesis — may finish more when projects are linked rather than isolated."
+          }
+        ],
+        "round": 1,
+        "source": "meta_live"
+      },
+      "rationale": {
+        "intro": "The Whole Wall is a single drag-around visual canvas that copies your zine wall-pinning method so you can arrange ceramics, photos, and sketches into a finish.",
+        "decisions": [
+          {
+            "id": "d1",
+            "because": "You mentioned you like to see everything at once, and that linear task apps hide how your projects relate so you forget half-finished pieces.",
+            "decision": "Build one zoomable wall with no columns or timelines where all projects live together.",
+            "benefit": "You can keep sight of the whole creative picture instead of losing pieces in separate lists.",
+            "evidence_ids": [
+              "style",
+              "s3"
+            ],
+            "basis": "stated"
+          },
+          {
+            "id": "d2",
+            "because": "You finished your 24-page zine by pinning sketches to a wall and rearranging them, and you chose visual-first interaction.",
+            "decision": "Make each project a card with a photo/scan and just a one-line note, sized large for looking.",
+            "benefit": "You can work the way you already sequence stories best — by looking and moving, not by typing lists.",
+            "evidence_ids": [
+              "s1",
+              "c1",
+              "p:visual_first"
+            ],
+            "basis": "preference"
+          },
+          {
+            "id": "d3",
+            "because": "You said you like to move ideas around, and you chose visual-first interaction.",
+            "decision": "Let you drag cards freely into clusters with finger or mouse, with no auto-layout or snapping into lanes.",
+            "benefit": "You get to think with your hands and let order emerge from play.",
+            "evidence_ids": [
+              "style",
+              "p:visual_first"
+            ],
+            "basis": "preference"
+          },
+          {
+            "id": "d4",
+            "because": "You juggle ceramics, photography and illustration and often start something new when two ideas connect.",
+            "decision": "Allow mixed-media cards side-by-side on the same wall with a simple link line to show when pieces could feed each other.",
+            "benefit": "You can spot cross-project sparks that would otherwise stay hidden.",
+            "evidence_ids": [
+              "s2",
+              "c2"
+            ],
+            "basis": "hypothesis"
+          },
+          {
+            "id": "d5",
+            "because": "You said rigid timelines make you drop projects, you chose flexible pacing, and your ambition is to finish more creative projects.",
+            "decision": "Have no due dates or streaks — just let you save different wall arrangements as story orders you can name and return to.",
+            "benefit": "You can keep experimenting without pressure while still moving toward a finish.",
+            "evidence_ids": [
+              "style",
+              "p:flexible_pacing",
+              "goal"
+            ],
+            "basis": "preference"
+          }
+        ],
+        "source": "meta_live",
+        "model": "muse-spark-1.3"
+      },
+      "blueprint": {
+        "tool_name": "The Whole Wall",
+        "purpose": "Finish more creative projects by seeing ceramics, photos, and sketches together on one movable wall.",
+        "user_requirements": [
+          "See everything at once across ceramics, photography, and illustration",
+          "Move ideas around freely with no rigid timelines, columns, or due dates",
+          "Recreate wall-pinning zine method digitally with visual cards",
+          "Spot when half-finished pieces could feed each other",
+          "Save different arrangements as story orders to return to"
+        ],
+        "core_features": [
+          {
+            "name": "Zoomable whole wall canvas",
+            "description": "Infinite pan and pinch-zoom canvas where all project cards live together with zoom-to-fit whole wall button.",
+            "priority": "must"
+          },
+          {
+            "name": "Visual project cards",
+            "description": "Each project is one large card showing a photo or scan plus a single short note, sized for looking not reading lists.",
+            "priority": "must"
+          },
+          {
+            "name": "Free drag clustering",
+            "description": "Free drag with finger or mouse, cards stay where dropped, overlapping and clustering allowed with no auto-layout.",
+            "priority": "must"
+          },
+          {
+            "name": "Saveable story orders",
+            "description": "Save the current positions of all cards as a named story order and restore or duplicate it anytime.",
+            "priority": "must"
+          },
+          {
+            "name": "Feed-into link lines",
+            "description": "Draw a simple line between two cards to mark that pieces could feed each other, line follows cards when moved.",
+            "priority": "should"
+          },
+          {
+            "name": "Fast capture",
+            "description": "Quick add from camera or upload in under 30 seconds to capture ceramics, photos, and sketches as they happen.",
+            "priority": "should"
+          }
+        ],
+        "interface": {
+          "layout": "One full-screen wall with no columns, floating minimal toolbar for add, zoom-to-fit, and saved orders.",
+          "navigation": "Stay on the wall; bottom bar switches between Live Wall and Saved Orders, plus zoom controls.",
+          "screens": [
+            {
+              "name": "Live Wall",
+              "purpose": "See all cards together, drag into clusters, zoom out for whole picture"
+            },
+            {
+              "name": "Card Focus",
+              "purpose": "View one card large, change image or edit its one-line note"
+            },
+            {
+              "name": "Saved Story Orders",
+              "purpose": "Save current arrangement with a name, preview, restore, or duplicate past versions"
+            }
+          ],
+          "interactions": [
+            "Drag cards with finger or mouse to move and overlap",
+            "Pinch or buttons to zoom from card detail to whole wall",
+            "Double-tap card to read and edit one-line note",
+            "Drag from card edge to another card to draw feed-into link"
+          ],
+          "responsive": "Works on phone for capture and finger-dragging and on laptop for big zoom-out overview, same wall both places."
+        },
+        "accessibility": [
+          "Meets WCAG 2.2 AA as a baseline: semantic HTML, labelled controls, visible focus, sufficient contrast.",
+          "Represent items spatially (board, map or canvas) with drag-to-arrange, not only as text lists.",
+          "Use colour plus icons/labels to group items; never colour alone.",
+          "No time limits or session timeouts that lose work; autosave continuously.",
+          "Let the person pause and resume any flow exactly where they left off.",
+          "Large image-first cards with minimum touch target 48px for drag handles and zoom controls to support visual-first interaction",
+          "All meaning carried visually also has text equivalent: every card image has required one-line note readable by screen reader",
+          "No time-limited interactions, auto-advancing, or pressure patterns to support flexible pacing - all changes autosave with undo"
+        ],
+        "data_privacy": {
+          "stores": [
+            "Card images as thumbnails plus one-line notes",
+            "Card x-y positions, clusters, and link lines",
+            "Named saved wall arrangements"
+          ],
+          "keep_private": [
+            "Project photos, scans, and notes",
+            "Wall arrangements and story order names"
+          ],
+          "edit_delete": "Tap card to edit its image or one-line note, drag link to remove it, delete card or delete a saved story order with confirm and undo for 10 seconds."
+        },
+        "architecture": [
+          "Lovable React + Tailwind single-page app with full-screen canvas using react-zoom-pan-pinch for pan and pinch-zoom, no backend needed",
+          "Free-form drag with pointer events and local state, no kanban library or lane logic to keep movement truly free",
+          "On-device persistence with IndexedDB via localForage for images plus localStorage for card positions and saved arrangements",
+          "Image handling client-side only with browser File API and canvas thumbnail downscaling to keep storage light and free"
+        ],
+        "acceptance_tests": [
+          "Zoom out shows all cards for ceramics, photos, and sketches on one screen with no scrolling needed to grasp whole",
+          "Card can be dragged freely with mouse and finger and stays where dropped with no snap to columns or lanes",
+          "New card can be created with an uploaded image and a one-line note under 140 characters in under 30 seconds",
+          "Two cards can be joined with a visible link line that moves with them when dragged",
+          "Current wall arrangement can be saved with a custom name and restored exactly later from Saved Orders",
+          "No due dates, streaks, timers, or completion percentages appear anywhere in the interface"
+        ],
+        "first_use_validation": {
+          "experiment": "Pin up current ceramics, photos, and sketches as cards, arrange freely for 10 minutes twice, and save 2 different story orders.",
+          "measures": [
+            "Number of half-finished pieces rediscovered on the wall",
+            "Number of saved story orders created",
+            "Finished or moved-forward pieces vs previous week"
+          ],
+          "duration": "1 week"
+        },
+        "intended_benefit": "You can see ceramics, photos, and sketches together and shape a finish by rearranging, not by forcing a timeline.",
+        "builder": "lovable",
+        "preferences": [
+          "visual_first",
+          "flexible_pacing"
+        ],
+        "design_decisions": [
+          {
+            "decision": "Build one zoomable wall with no columns or timelines where all projects live together.",
+            "benefit": "You can keep sight of the whole creative picture instead of losing pieces in separate lists."
+          },
+          {
+            "decision": "Make each project a card with a photo/scan and just a one-line note, sized large for looking.",
+            "benefit": "You can work the way you already sequence stories best — by looking and moving, not by typing lists."
+          },
+          {
+            "decision": "Let you drag cards freely into clusters with finger or mouse, with no auto-layout or snapping into lanes.",
+            "benefit": "You get to think with your hands and let order emerge from play."
+          },
+          {
+            "decision": "Allow mixed-media cards side-by-side on the same wall with a simple link line to show when pieces could feed each other.",
+            "benefit": "You can spot cross-project sparks that would otherwise stay hidden."
+          },
+          {
+            "decision": "Have no due dates or streaks — just let you save different wall arrangements as story orders you can name and return to.",
+            "benefit": "You can keep experimenting without pressure while still moving toward a finish."
+          }
+        ],
+        "personal_context": [
+          {
+            "id": "goal",
+            "text": "I want to finish more creative projects."
+          },
+          {
+            "id": "style",
+            "text": "I like to see everything at once and move ideas around. Rigid timelines make me drop projects."
+          },
+          {
+            "id": "s1",
+            "text": "Illustrated a 24-page zine by pinning sketches to a wall and rearranging them until the story worked."
+          },
+          {
+            "id": "s2",
+            "text": "Juggles ceramics, photography and illustration side projects; often starts a new one when two ideas connect."
+          },
+          {
+            "id": "s3",
+            "text": "Linear task apps hide how my projects relate, so I forget half-finished pieces that could feed each other."
+          }
+        ],
+        "build_prompt": "Build \"The Whole Wall\" — a personal tool designed for one specific person.\n\nBuild this as a Lovable web app (React, TypeScript, Tailwind). Start with data stored in the browser (localStorage/IndexedDB); only enable Lovable Cloud if the person later wants their data on more than one device.\n\n## Purpose\nFinish more creative projects by seeing ceramics, photos, and sketches together on one movable wall.\n\n## About the person (shared with their approval)\n- I want to finish more creative projects.\n- I like to see everything at once and move ideas around. Rigid timelines make me drop projects.\n- Illustrated a 24-page zine by pinning sketches to a wall and rearranging them until the story worked.\n- Juggles ceramics, photography and illustration side projects; often starts a new one when two ideas connect.\n- Linear task apps hide how my projects relate, so I forget half-finished pieces that could feed each other.\n\n## How they want to work\n- See everything at once across ceramics, photography, and illustration\n- Move ideas around freely with no rigid timelines, columns, or due dates\n- Recreate wall-pinning zine method digitally with visual cards\n- Spot when half-finished pieces could feed each other\n- Save different arrangements as story orders to return to\n\n## Design decisions to keep\n- Build one zoomable wall with no columns or timelines where all projects live together. (so that You can keep sight of the whole creative picture instead of losing pieces in separate lists.)\n- Make each project a card with a photo/scan and just a one-line note, sized large for looking. (so that You can work the way you already sequence stories best — by looking and moving, not by typing lists.)\n- Let you drag cards freely into clusters with finger or mouse, with no auto-layout or snapping into lanes. (so that You get to think with your hands and let order emerge from play.)\n- Allow mixed-media cards side-by-side on the same wall with a simple link line to show when pieces could feed each other. (so that You can spot cross-project sparks that would otherwise stay hidden.)\n- Have no due dates or streaks — just let you save different wall arrangements as story orders you can name and return to. (so that You can keep experimenting without pressure while still moving toward a finish.)\n\n## Core functionality (in priority order)\nMUST have:\n1. Zoomable whole wall canvas — Infinite pan and pinch-zoom canvas where all project cards live together with zoom-to-fit whole wall button.\n2. Visual project cards — Each project is one large card showing a photo or scan plus a single short note, sized for looking not reading lists.\n3. Free drag clustering — Free drag with finger or mouse, cards stay where dropped, overlapping and clustering allowed with no auto-layout.\n4. Saveable story orders — Save the current positions of all cards as a named story order and restore or duplicate it anytime.\n\nSHOULD have:\n1. Feed-into link lines — Draw a simple line between two cards to mark that pieces could feed each other, line follows cards when moved.\n2. Fast capture — Quick add from camera or upload in under 30 seconds to capture ceramics, photos, and sketches as they happen.\n\n## Interface\nLayout: One full-screen wall with no columns, floating minimal toolbar for add, zoom-to-fit, and saved orders.\nNavigation: Stay on the wall; bottom bar switches between Live Wall and Saved Orders, plus zoom controls.\nScreens:\n- Live Wall: See all cards together, drag into clusters, zoom out for whole picture\n- Card Focus: View one card large, change image or edit its one-line note\n- Saved Story Orders: Save current arrangement with a name, preview, restore, or duplicate past versions\nKey interactions:\n- Drag cards with finger or mouse to move and overlap\n- Pinch or buttons to zoom from card detail to whole wall\n- Double-tap card to read and edit one-line note\n- Drag from card edge to another card to draw feed-into link\nResponsive behaviour: Works on phone for capture and finger-dragging and on laptop for big zoom-out overview, same wall both places.\n\n## Accessibility requirements (must implement)\n- Meets WCAG 2.2 AA as a baseline: semantic HTML, labelled controls, visible focus, sufficient contrast.\n- Represent items spatially (board, map or canvas) with drag-to-arrange, not only as text lists.\n- Use colour plus icons/labels to group items; never colour alone.\n- No time limits or session timeouts that lose work; autosave continuously.\n- Let the person pause and resume any flow exactly where they left off.\n- Large image-first cards with minimum touch target 48px for drag handles and zoom controls to support visual-first interaction\n- All meaning carried visually also has text equivalent: every card image has required one-line note readable by screen reader\n- No time-limited interactions, auto-advancing, or pressure patterns to support flexible pacing - all changes autosave with undo\n\n## Data and privacy\nStores:\n- Card images as thumbnails plus one-line notes\n- Card x-y positions, clusters, and link lines\n- Named saved wall arrangements\nKeep private:\n- Project photos, scans, and notes\n- Wall arrangements and story order names\nEditing and deleting: Tap card to edit its image or one-line note, drag link to remove it, delete card or delete a saved story order with confirm and undo for 10 seconds.\n\n## Technical approach\n- Lovable React + Tailwind single-page app with full-screen canvas using react-zoom-pan-pinch for pan and pinch-zoom, no backend needed\n- Free-form drag with pointer events and local state, no kanban library or lane logic to keep movement truly free\n- On-device persistence with IndexedDB via localForage for images plus localStorage for card positions and saved arrangements\n- Image handling client-side only with browser File API and canvas thumbnail downscaling to keep storage light and free\nDo not add paid services, external accounts or integrations that are not listed here.\n\n## Acceptance tests (the app is done when all pass)\n- Zoom out shows all cards for ceramics, photos, and sketches on one screen with no scrolling needed to grasp whole\n- Card can be dragged freely with mouse and finger and stays where dropped with no snap to columns or lanes\n- New card can be created with an uploaded image and a one-line note under 140 characters in under 30 seconds\n- Two cards can be joined with a visible link line that moves with them when dragged\n- Current wall arrangement can be saved with a custom name and restored exactly later from Saved Orders\n- No due dates, streaks, timers, or completion percentages appear anywhere in the interface\n\n## First-use validation\nPin up current ceramics, photos, and sketches as cards, arrange freely for 10 minutes twice, and save 2 different story orders.\nMeasure: Number of half-finished pieces rediscovered on the wall; Number of saved story orders created; Finished or moved-forward pieces vs previous week\nDuration: 1 week\nAdd a simple in-app log so the person can record these measurements themselves.",
+        "source": "meta_live",
+        "model": "muse-spark-1.3",
+        "generated_at": "2026-11-04T02:40:23.567Z"
+      }
+    },
+    "B": {
+      "discovery": {
+        "follow_up_questions": [],
+        "inferred_needs": [
+          {
+            "id": "n1",
+            "need": "Turn today's voice memos into a single clear next action instead of an unreviewed pile",
+            "evidence_ids": [
+              "style",
+              "s2",
+              "goal"
+            ],
+            "basis": "stated"
+          },
+          {
+            "id": "n2",
+            "need": "Receive steady external prompting as one small evening step that carries follow-through",
+            "evidence_ids": [
+              "s1",
+              "c1",
+              "style"
+            ],
+            "basis": "hypothesis"
+          },
+          {
+            "id": "n3",
+            "need": "Work in a calm, minimal space with almost no choices to avoid freezing",
+            "evidence_ids": [
+              "s3",
+              "s2"
+            ],
+            "basis": "stated"
+          }
+        ],
+        "concepts": [
+          {
+            "id": "r1-1",
+            "name": "One Thing From Today's Walk",
+            "what_it_does": "You add just one voice memo from the day. It shows the words, plays the audio, and tells you the single next thing to do with that idea — like 'hum the chorus twice and re-record it slower.' One big button, one instruction, no lists.",
+            "why_for_you": "You said you record voice memos all day but never go back to them, and you need to be told the one next thing to do. This is made for your 300+ walk memos and your wish to finish more creative projects.",
+            "evidence_ids": [
+              "style",
+              "s2",
+              "goal"
+            ],
+            "what_becomes_possible": "Your daily memos stop piling up and start turning into finished pieces, one tiny done step at a time.",
+            "differs_from_generic": "Unlike a generic transcription app that gives you a wall of text to sort, this gives you only one memo and one next physical action, built for someone who freezes with options.",
+            "assumptions": [
+              "You can upload or pick a voice memo file on your phone when you want to use it",
+              "Your next actions can be very small (under 15 minutes) and still move you forward"
+            ]
+          },
+          {
+            "id": "r1-2",
+            "name": "Evening Nudge Friend",
+            "what_it_does": "You tell it your current project in one sentence. Each evening it sends one small task for tomorrow, you reply done or stuck, and it adjusts the next nudge to be smaller. No dashboard, just a calm chat thread.",
+            "why_for_you": "You finished a 6-episode audio story because a friend texted one small task each evening. You already show strong follow-through with external prompting when it is that simple.",
+            "evidence_ids": [
+              "s1",
+              "c1",
+              "style"
+            ],
+            "what_becomes_possible": "You get the same steady finish-energy that helped you complete your 6-episode story, but on demand for your next project.",
+            "differs_from_generic": "Unlike a generic to-do list that shows all tasks at once, this copies exactly what worked for you — one small evening task from a friendly voice — and hides everything else.",
+            "assumptions": [
+              "You have one creative project you want to focus on at a time",
+              "An evening check-in message feels supportive, not pressuring, like it did with your friend"
+            ]
+          },
+          {
+            "id": "r1-3",
+            "name": "One Memo A Night",
+            "what_it_does": "Each night it surfaces one forgotten memo from your pile. You listen, tap Keep or Let Go, and if you keep it you get one tiny next action written for you. Let Go archives it out of sight.",
+            "why_for_you": "You have 300+ unsorted melodies and lines and you freeze when screens have lots of options. This respects your strong idea generation while making sorting feel tiny and safe.",
+            "evidence_ids": [
+              "s2",
+              "s3",
+              "c2"
+            ],
+            "what_becomes_possible": "Your old backlog slowly becomes a small shelf of keepers with clear next steps, without ever facing a busy screen.",
+            "differs_from_generic": "Unlike a generic audio library or note app that shows hundreds of files to organize, this shows only one old memo per night with a Keep or Let Go choice.",
+            "assumptions": [
+              "You are okay listening back to one old memo per night, even if some are rough",
+              "Most of your 300+ memos can be safely ignored once you hear them again"
+            ]
+          }
+        ],
+        "model": "muse-spark-1.3",
+        "evidence": [
+          {
+            "id": "goal",
+            "kind": "stated",
+            "label": "Ambition",
+            "text": "I want to finish more creative projects."
+          },
+          {
+            "id": "style",
+            "kind": "stated",
+            "label": "How they like to work",
+            "text": "I record voice memos all day but never go back to them. I need to be told the one next thing to do."
+          },
+          {
+            "id": "s1",
+            "kind": "stated",
+            "label": "Project",
+            "text": "Finished a 6-episode audio story after a friend texted one small task each evening."
+          },
+          {
+            "id": "s2",
+            "kind": "stated",
+            "label": "Experience",
+            "text": "Has 300+ unsorted voice memos with melodies and lines captured on walks."
+          },
+          {
+            "id": "s3",
+            "kind": "stated",
+            "label": "Frustration",
+            "text": "Busy screens with lots of options make me freeze and choose nothing."
+          },
+          {
+            "id": "c1",
+            "kind": "demonstrated",
+            "label": "Capability (demonstrated)",
+            "text": "Follow-through with external prompting — completed a series when given one daily step."
+          },
+          {
+            "id": "c2",
+            "kind": "hypothesis",
+            "label": "Capability (hypothesis)",
+            "text": "Melodic recall — memos suggest strong idea generation that stalls at sorting."
+          }
+        ],
+        "round": 1,
+        "source": "meta_live"
+      },
+      "rationale": {
+        "intro": "A calm one-memo companion that turns today's walk recording into words, audio, and one tiny next step.",
+        "decisions": [
+          {
+            "id": "d1",
+            "because": "You said busy screens with lots of options make you freeze and choose nothing, and you chose a low-distraction interface.",
+            "decision": "One full-screen view shows only today's memo with one big button and one instruction — no lists, counts, or menus.",
+            "benefit": "You can open it without freezing and act right away.",
+            "evidence_ids": [
+              "s3",
+              "p:low_distraction"
+            ],
+            "basis": "preference"
+          },
+          {
+            "id": "d2",
+            "because": "You mentioned you record voice memos all day but never go back to them, and you chose voice-first interaction.",
+            "decision": "You tap one big button to record or pick a memo, and the tool plays the audio front-and-centre alongside the words.",
+            "benefit": "Staying in voice keeps capturing and reviewing effortless.",
+            "evidence_ids": [
+              "style",
+              "p:voice_first"
+            ],
+            "basis": "preference"
+          },
+          {
+            "id": "d3",
+            "because": "You said you need to be told the one next thing to do, and you finished a 6-episode audio story when a friend texted one small task each evening.",
+            "decision": "After transcription it gives only one concrete physical next step under 15 minutes, like hum the chorus twice and re-record it slower.",
+            "benefit": "You get the kind of external prompt that helped you follow through before, without having to decide what to do.",
+            "evidence_ids": [
+              "style",
+              "s1",
+              "c1",
+              "p:step_by_step"
+            ],
+            "basis": "preference"
+          },
+          {
+            "id": "d4",
+            "because": "You have 300+ unsorted voice memos with melodies and lines from walks, and you want to finish more creative projects.",
+            "decision": "The tool works with only one memo from today and hides the old pile — no sorting, tagging, or backlog to face.",
+            "benefit": "Your daily memos stop piling up and start turning into finished pieces, one tiny done step at a time.",
+            "evidence_ids": [
+              "s2",
+              "goal"
+            ],
+            "basis": "stated"
+          },
+          {
+            "id": "d5",
+            "because": "You chose minimal required typing and simplified, step-by-step workflows.",
+            "decision": "No typing is needed — words appear automatically and you mark the one step done with a single tap or a short voice 'done'.",
+            "benefit": "You can move forward on a walk or tired evening without writing anything.",
+            "evidence_ids": [
+              "p:minimal_typing",
+              "p:step_by_step"
+            ],
+            "basis": "preference"
+          }
+        ],
+        "source": "meta_live",
+        "model": "muse-spark-1.3"
+      },
+      "blueprint": {
+        "tool_name": "One Thing From Today's Walk",
+        "purpose": "Turn one daily walk voice memo into one finished creative step, without facing lists or deciding what to do next.",
+        "user_requirements": [
+          "I want to finish more creative projects.",
+          "I record voice memos all day but never go back to them. I need to be told the one next thing to do.",
+          "Finished a 6-episode audio story after a friend texted one small task each evening.",
+          "Has 300+ unsorted voice memos with melodies and lines captured on walks.",
+          "Busy screens with lots of options make me freeze and choose nothing.",
+          "Voice-first interaction",
+          "Simplified, step-by-step workflows",
+          "Low-distraction interface"
+        ],
+        "core_features": [
+          {
+            "name": "One-button today recorder",
+            "description": "One oversized button to start/stop today's single voice memo. Only one slot per day, no lists or picker.",
+            "priority": "must"
+          },
+          {
+            "name": "Play + words together",
+            "description": "Plays today's audio front-and-centre with auto-generated words underneath. No editing, tagging or sorting.",
+            "priority": "must"
+          },
+          {
+            "name": "Single next physical step",
+            "description": "Creates one concrete physical action under 15 minutes tailored to the memo, e.g. hum the chorus twice and re-record it slower. Only one instruction shown.",
+            "priority": "must"
+          },
+          {
+            "name": "Tap-or-say done",
+            "description": "Mark the step finished with one tap or saying done. Shows calm finished state that encourages stopping.",
+            "priority": "must"
+          },
+          {
+            "name": "Hide the pile",
+            "description": "Past memos are hidden by default so the 300+ pile is never shown. Keeps focus on finishing one piece.",
+            "priority": "should"
+          },
+          {
+            "name": "Daily fresh start",
+            "description": "Next morning the screen resets to empty for a new one-thing memo.",
+            "priority": "could"
+          }
+        ],
+        "interface": {
+          "layout": "Single-column full-screen calm view: big button on top, audio player + short transcript in middle, one instruction card at bottom",
+          "navigation": "No navigation menu or tabs - one Today view that changes state from empty to recorded to done",
+          "screens": [
+            {
+              "name": "Today",
+              "purpose": "Shows only today's memo with one big button, playback with words, and the single next step"
+            },
+            {
+              "name": "Recording",
+              "purpose": "Same screen in recording state with large stop control and live level indicator"
+            },
+            {
+              "name": "Done",
+              "purpose": "Calm finished state confirming the one step is complete with no further options"
+            }
+          ],
+          "interactions": [
+            "Tap-and-hold or tap to record, auto transcribe, tap play to listen, tap Done or say done"
+          ],
+          "responsive": "Mobile-first full-screen for phone on walks, scales to centred narrow column on desktop with same single view"
+        },
+        "accessibility": [
+          "Meets WCAG 2.2 AA as a baseline: semantic HTML, labelled controls, visible focus, sufficient contrast.",
+          "Every primary action can be started by voice using the browser's built-in Web Speech API where supported, with a large visible microphone button.",
+          "Show the live transcript and let the person confirm or edit it before anything is saved.",
+          "Always keep a typed fallback for browsers without speech recognition.",
+          "Break multi-part tasks into one step per screen with a clear 'Step X of Y' indicator and Back/Next.",
+          "Show only the single next action prominently; secondary options sit behind a 'More' control.",
+          "No badges, counters, streaks or notifications unless the person turns them on.",
+          "A focus mode that hides everything except the current item.",
+          "Prefer choices, chips, templates and recent-value suggestions over free-text fields.",
+          "No required free-text field longer than a short phrase.",
+          "One visible primary action at a time to prevent freeze from busy screens.",
+          "Large full-width record/play/done button operable by tap and by voice done command.",
+          "Auto captions with playback synced highlighting so listening does not require reading long wall of text.",
+          "No required typing anywhere - all progress by tap or short voice utterance."
+        ],
+        "data_privacy": {
+          "stores": [
+            "Today's audio blob on-device only",
+            "Today's transcript text on-device only",
+            "Today's single next-step text and done flag on-device only"
+          ],
+          "keep_private": [
+            "Voice audio and transcripts",
+            "Generated next steps and done status"
+          ],
+          "edit_delete": "Delete today's memo and transcript with one Delete today button on the Today screen, plus Delete all on-device data in settings. Deletion removes audio and text from IndexedDB immediately."
+        },
+        "architecture": [
+          "Lovable + React single-page app with on-device state in IndexedDB/localStorage for today's audio, transcript and next-step.",
+          "Browser MediaRecorder for capture and HTML audio element for front-and-centre playback.",
+          "Browser Web Speech API SpeechRecognition for done voice command and Speech-to-text where available, with manual fallback to on-device Whisper-tiny via free transformer.js if needed.",
+          "Rule-based next-step generator locally: pick verb + time-box from templates like hum twice, sing slower, clap rhythm, re-record line, no LLM API call required.",
+          "Daily rollover logic: today's memo keyed by date string, yesterday hidden by default with delete-only access."
+        ],
+        "acceptance_tests": [
+          "Open app and see only today's memo view with one big Record/Play button and no lists, counts or menus.",
+          "Record a voice memo up to 5 minutes, see words appear automatically without typing, and hear playback from same screen.",
+          "After transcription, app shows exactly one physical next step under 15 minutes, e.g. hum the chorus twice and re-record it slower.",
+          "Tap Done or say done to mark the single step finished without typing or navigating elsewhere.",
+          "Old memos stay hidden - opening app next day shows empty today slot, not the 300+ backlog.",
+          "Works on phone browser on a walk with large touch target usable one-handed and offline capture saved on-device."
+        ],
+        "first_use_validation": {
+          "experiment": "Each walk day, capture just one memo in the tool and do the one suggested step the same evening.",
+          "measures": [
+            "Number of days out of 7 the single step was marked done",
+            "Number of memos revisited vs piled up",
+            "Evenings finished without freezing or avoiding review"
+          ],
+          "duration": "7 days of daily walks"
+        },
+        "intended_benefit": "Your daily memos stop piling up and start turning into finished pieces, one tiny done step at a time.",
+        "builder": "lovable",
+        "preferences": [
+          "voice_first",
+          "step_by_step",
+          "low_distraction",
+          "minimal_typing"
+        ],
+        "design_decisions": [
+          {
+            "decision": "One full-screen view shows only today's memo with one big button and one instruction — no lists, counts, or menus.",
+            "benefit": "You can open it without freezing and act right away."
+          },
+          {
+            "decision": "You tap one big button to record or pick a memo, and the tool plays the audio front-and-centre alongside the words.",
+            "benefit": "Staying in voice keeps capturing and reviewing effortless."
+          },
+          {
+            "decision": "After transcription it gives only one concrete physical next step under 15 minutes, like hum the chorus twice and re-record it slower.",
+            "benefit": "You get the kind of external prompt that helped you follow through before, without having to decide what to do."
+          },
+          {
+            "decision": "The tool works with only one memo from today and hides the old pile — no sorting, tagging, or backlog to face.",
+            "benefit": "Your daily memos stop piling up and start turning into finished pieces, one tiny done step at a time."
+          },
+          {
+            "decision": "No typing is needed — words appear automatically and you mark the one step done with a single tap or a short voice 'done'.",
+            "benefit": "You can move forward on a walk or tired evening without writing anything."
+          }
+        ],
+        "personal_context": [
+          {
+            "id": "goal",
+            "text": "I want to finish more creative projects."
+          },
+          {
+            "id": "style",
+            "text": "I record voice memos all day but never go back to them. I need to be told the one next thing to do."
+          },
+          {
+            "id": "s1",
+            "text": "Finished a 6-episode audio story after a friend texted one small task each evening."
+          },
+          {
+            "id": "s2",
+            "text": "Has 300+ unsorted voice memos with melodies and lines captured on walks."
+          },
+          {
+            "id": "s3",
+            "text": "Busy screens with lots of options make me freeze and choose nothing."
+          }
+        ],
+        "build_prompt": "Build \"One Thing From Today's Walk\" — a personal tool designed for one specific person.\n\nBuild this as a Lovable web app (React, TypeScript, Tailwind). Start with data stored in the browser (localStorage/IndexedDB); only enable Lovable Cloud if the person later wants their data on more than one device.\n\n## Purpose\nTurn one daily walk voice memo into one finished creative step, without facing lists or deciding what to do next.\n\n## About the person (shared with their approval)\n- I want to finish more creative projects.\n- I record voice memos all day but never go back to them. I need to be told the one next thing to do.\n- Finished a 6-episode audio story after a friend texted one small task each evening.\n- Has 300+ unsorted voice memos with melodies and lines captured on walks.\n- Busy screens with lots of options make me freeze and choose nothing.\n\n## How they want to work\n- I want to finish more creative projects.\n- I record voice memos all day but never go back to them. I need to be told the one next thing to do.\n- Finished a 6-episode audio story after a friend texted one small task each evening.\n- Has 300+ unsorted voice memos with melodies and lines captured on walks.\n- Busy screens with lots of options make me freeze and choose nothing.\n- Voice-first interaction\n- Simplified, step-by-step workflows\n- Low-distraction interface\n\n## Design decisions to keep\n- One full-screen view shows only today's memo with one big button and one instruction — no lists, counts, or menus. (so that You can open it without freezing and act right away.)\n- You tap one big button to record or pick a memo, and the tool plays the audio front-and-centre alongside the words. (so that Staying in voice keeps capturing and reviewing effortless.)\n- After transcription it gives only one concrete physical next step under 15 minutes, like hum the chorus twice and re-record it slower. (so that You get the kind of external prompt that helped you follow through before, without having to decide what to do.)\n- The tool works with only one memo from today and hides the old pile — no sorting, tagging, or backlog to face. (so that Your daily memos stop piling up and start turning into finished pieces, one tiny done step at a time.)\n- No typing is needed — words appear automatically and you mark the one step done with a single tap or a short voice 'done'. (so that You can move forward on a walk or tired evening without writing anything.)\n\n## Core functionality (in priority order)\nMUST have:\n1. One-button today recorder — One oversized button to start/stop today's single voice memo. Only one slot per day, no lists or picker.\n2. Play + words together — Plays today's audio front-and-centre with auto-generated words underneath. No editing, tagging or sorting.\n3. Single next physical step — Creates one concrete physical action under 15 minutes tailored to the memo, e.g. hum the chorus twice and re-record it slower. Only one instruction shown.\n4. Tap-or-say done — Mark the step finished with one tap or saying done. Shows calm finished state that encourages stopping.\n\nSHOULD have:\n1. Hide the pile — Past memos are hidden by default so the 300+ pile is never shown. Keeps focus on finishing one piece.\n\nCOULD have:\n1. Daily fresh start — Next morning the screen resets to empty for a new one-thing memo.\n\n## Interface\nLayout: Single-column full-screen calm view: big button on top, audio player + short transcript in middle, one instruction card at bottom\nNavigation: No navigation menu or tabs - one Today view that changes state from empty to recorded to done\nScreens:\n- Today: Shows only today's memo with one big button, playback with words, and the single next step\n- Recording: Same screen in recording state with large stop control and live level indicator\n- Done: Calm finished state confirming the one step is complete with no further options\nKey interactions:\n- Tap-and-hold or tap to record, auto transcribe, tap play to listen, tap Done or say done\nResponsive behaviour: Mobile-first full-screen for phone on walks, scales to centred narrow column on desktop with same single view\n\n## Accessibility requirements (must implement)\n- Meets WCAG 2.2 AA as a baseline: semantic HTML, labelled controls, visible focus, sufficient contrast.\n- Every primary action can be started by voice using the browser's built-in Web Speech API where supported, with a large visible microphone button.\n- Show the live transcript and let the person confirm or edit it before anything is saved.\n- Always keep a typed fallback for browsers without speech recognition.\n- Break multi-part tasks into one step per screen with a clear 'Step X of Y' indicator and Back/Next.\n- Show only the single next action prominently; secondary options sit behind a 'More' control.\n- No badges, counters, streaks or notifications unless the person turns them on.\n- A focus mode that hides everything except the current item.\n- Prefer choices, chips, templates and recent-value suggestions over free-text fields.\n- No required free-text field longer than a short phrase.\n- One visible primary action at a time to prevent freeze from busy screens.\n- Large full-width record/play/done button operable by tap and by voice done command.\n- Auto captions with playback synced highlighting so listening does not require reading long wall of text.\n- No required typing anywhere - all progress by tap or short voice utterance.\n\n## Data and privacy\nStores:\n- Today's audio blob on-device only\n- Today's transcript text on-device only\n- Today's single next-step text and done flag on-device only\nKeep private:\n- Voice audio and transcripts\n- Generated next steps and done status\nEditing and deleting: Delete today's memo and transcript with one Delete today button on the Today screen, plus Delete all on-device data in settings. Deletion removes audio and text from IndexedDB immediately.\n\n## Technical approach\n- Lovable + React single-page app with on-device state in IndexedDB/localStorage for today's audio, transcript and next-step.\n- Browser MediaRecorder for capture and HTML audio element for front-and-centre playback.\n- Browser Web Speech API SpeechRecognition for done voice command and Speech-to-text where available, with manual fallback to on-device Whisper-tiny via free transformer.js if needed.\n- Rule-based next-step generator locally: pick verb + time-box from templates like hum twice, sing slower, clap rhythm, re-record line, no LLM API call required.\n- Daily rollover logic: today's memo keyed by date string, yesterday hidden by default with delete-only access.\nDo not add paid services, external accounts or integrations that are not listed here.\n\n## Acceptance tests (the app is done when all pass)\n- Open app and see only today's memo view with one big Record/Play button and no lists, counts or menus.\n- Record a voice memo up to 5 minutes, see words appear automatically without typing, and hear playback from same screen.\n- After transcription, app shows exactly one physical next step under 15 minutes, e.g. hum the chorus twice and re-record it slower.\n- Tap Done or say done to mark the single step finished without typing or navigating elsewhere.\n- Old memos stay hidden - opening app next day shows empty today slot, not the 300+ backlog.\n- Works on phone browser on a walk with large touch target usable one-handed and offline capture saved on-device.\n\n## First-use validation\nEach walk day, capture just one memo in the tool and do the one suggested step the same evening.\nMeasure: Number of days out of 7 the single step was marked done; Number of memos revisited vs piled up; Evenings finished without freezing or avoiding review\nDuration: 7 days of daily walks\nAdd a simple in-app log so the person can record these measurements themselves.",
+        "source": "meta_live",
+        "model": "muse-spark-1.3",
+        "generated_at": "2026-11-04T02:40:29.879Z"
+      }
+    }
+  }
+}
