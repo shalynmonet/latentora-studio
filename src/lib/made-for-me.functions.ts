@@ -342,3 +342,51 @@ export const demoDesign = createServerFn({ method: "POST" })
     const blueprint = await p.runBlueprint({ concept, customization: c, decisions: rationale.decisions.map((d) => ({ decision: d.decision, benefit: d.benefit })), approved });
     return { rationale, blueprint };
   });
+
+const str = (n: number) => z.string().max(n);
+const strs = (items: number, n = 600) => z.array(str(n)).max(items);
+/** Stateless Build with Muse for the fictional judge-demo profiles (no workspace data involved). */
+export const demoBuild = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        profile: profileKey,
+        blueprint: z.object({
+          tool_name: str(80),
+          purpose: str(1000),
+          user_requirements: strs(10),
+          core_features: z.array(z.object({ name: str(100), description: str(600), priority: z.enum(["must", "should", "could"]) })).max(10),
+          interface: z.object({
+            layout: str(800),
+            navigation: str(600),
+            screens: z.array(z.object({ name: str(80), purpose: str(400) })).max(8),
+            interactions: strs(10),
+            responsive: str(600),
+          }),
+          accessibility: strs(30),
+          data_privacy: z.object({ stores: strs(10), keep_private: strs(10), edit_delete: str(600) }),
+          architecture: strs(10),
+          acceptance_tests: strs(12),
+          first_use_validation: z.object({ experiment: str(800), measures: strs(6), duration: str(200) }),
+          intended_benefit: str(800),
+          builder: z.enum(["lovable", "codex", "neutral"]),
+          design_decisions: z.array(z.object({ decision: str(600), benefit: str(600) })).max(10),
+          generated_at: str(40),
+        }),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const prof = DEMO_PROFILES.find((p) => p.key === data.profile)!;
+    const { runMuseBuild } = await import("./build-with-muse.server");
+    // Preferences and personal context come from the fictional profile on the server, not the request.
+    const blueprint = {
+      ...data.blueprint,
+      preferences: prof.preferences,
+      personal_context: prof.evidence.filter((e) => e.kind === "stated").map((e) => ({ id: e.id, text: e.text })),
+      build_prompt: "",
+      source: "meta_live",
+      model: null,
+    } as Blueprint;
+    return runMuseBuild(blueprint);
+  });
